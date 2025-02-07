@@ -17,7 +17,7 @@ http://127.0.0.1:8000/
 
 Instrucciones para guardado de cambios:
 
-1. Ejecutar comando ``git add .` para seleccionar los archivos modificados
+1. Ejecutar comando ``git add .`` para seleccionar los archivos modificados
 2. Ejecutar comando ``git commmit -m "Mensaje"``
 
 Nomenclatura recomendada:
