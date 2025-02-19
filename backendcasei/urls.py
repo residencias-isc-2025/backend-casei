@@ -17,9 +17,15 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from backendcasei.views import hello_world, login_view
+
 urlpatterns = [
     path('', include('core.urls')),
     path('admin/', admin.site.urls),
     # Paths de Auth
     path('accounts/', include('django.contrib.auth.urls')),
+    path('hello/<str:param1>/<int:param2>', hello_world),
+    
+    
+    path('api/login/', login_view)
 ]

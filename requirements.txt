@@ -3,3 +3,4 @@ Pillow
 pylint
 pylint-django
 pylint-celery
+django-cors-headers
