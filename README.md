@@ -29,6 +29,8 @@ Nomenclatura recomendada:
 
 EJEMPLO: fix - carga de archivos desde csv
 
+Link del repositorio: https://github.com/residencias-isc-2025/backend-casei
+
 NOTA:
 
 Si se instala una nuneva librería esta debe ser agregada en el archivo
