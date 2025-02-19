@@ -32,11 +32,18 @@
               </li>
             </ul>
             <ul class="navbar-nav">
+              {% if not request.user.is_authenticated %}
               <li class="nav-item">
-                <a class="nav-link" href="/admin/">
-                  {% if request.user.is_staff %}Admin{% else %}Acceder{% endif %}
-                </a>
+                <a class="nav-link" href="{% url 'login' %}">Acceder</a>
               </li>
+              {% else %}
+              <li class="nav-item">
+                <form action="{% url 'logout' %}" method="post" style="display: inline;">
+                  {% csrf_token %}
+                  <button type="submit" class="nav-link btn btn-link" style="border: none; padding: 0; background: none;">Salir</button>
+                </form>
+              </li>
+              {% endif %}
             </ul>
           </div>
         </div>
