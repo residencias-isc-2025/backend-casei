@@ -25,8 +25,8 @@ def login_view(request):
             if user is not None:
                 return JsonResponse({"mensaje": "Inicio de sesión exitoso"}, status=200)
             else:
-                return JsonResponse({"error": "Credenciales incorrectas"}, status=401)
+                return JsonResponse({"mensaje": "Credenciales incorrectas"}, status=401)
             
         except json.JSONDecodeError:
-            return JsonResponse({"error": "Datos inválidos"}, status=400)
+            return JsonResponse({"mensaje": "Datos inválidos"}, status=400)
         
