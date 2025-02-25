@@ -4,3 +4,5 @@ pylint
 pylint-django
 pylint-celery
 django-cors-headers
+djangorestframework
+djangorestframework-simplejwt
