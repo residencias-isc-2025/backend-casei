@@ -32,6 +32,10 @@ class RegisterUserView(APIView):
         role = data.get('role')
         tipo_docente = data.get('tipo_docente', None)
 
+        #Validar si el Usuario ya existe
+        if CustomUser.objects.filter(username=username).exists():
+            return Response({"error": "El nombre de usuario ya está registrado. Elige otro."}, status=status.HTTP_400_BAD_REQUEST)
+
         # Validar que el rol sea válido
         if role not in ['superuser', 'admin', 'user']:
             return Response({"mensaje": "Rol inválido. Debe ser 'superuser', 'admin' o 'user'."},
