@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
+from rest_framework.generics import ListAPIView
 from registration.serializers import UserSerializer
 from registration.models import CustomUser
 from django.shortcuts import render, redirect
@@ -118,7 +119,18 @@ class ResetPasswordView(APIView):
         except CustomUser.DoesNotExist:
             return Response({"error": "No se encontró un usuario con ese username."}, status=status.HTTP_404_NOT_FOUND)
         
-        
+#Endpoint de listado
+class ListUsersView(ListAPIView):
+    permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
+    queryset = CustomUser.objects.all()
+    serializer_class = UserSerializer
+
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return CustomUser.objects.all()
+        return CustomUser.objects.none()
+    
+
 @login_required
 def dashboard(request):
     if request.user.role == "admin":
