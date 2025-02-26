@@ -134,6 +134,14 @@ class ListUsersView(ListAPIView):
             return CustomUser.objects.all()
         return CustomUser.objects.none()
     
+#Endpoint de jalar la informacion del usuario autenticado
+class UserProfileView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        serializer = UserSerializer(request.user)
+        return Response(serializer.data)
+
 
 @login_required
 def dashboard(request):
