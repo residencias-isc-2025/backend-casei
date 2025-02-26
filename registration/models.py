@@ -25,7 +25,18 @@ class CustomUser(AbstractUser):
         ('user', 'Docente'),
         ('superuser', 'Super Usuario'),
     )
+
+    TIPO_DOCENTE_CHOICES = (
+        ('basificado', 'Basificado'),
+        ('asignatura', 'basificado'),
+    )
+
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
+    tipo_docente = models.CharField(max_length=20, choices=TIPO_DOCENTE_CHOICES, null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.username} ({self.get_role_display()})"
+
 
     objects = CustomUserManager()
 

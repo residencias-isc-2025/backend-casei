@@ -29,10 +29,15 @@ class RegisterUserView(APIView):
         username = data.get('username')
         password = make_password(data.get('password'))  # Hashear la contraseña
         role = data.get('role')
+        tipo_docente = data.get('tipo_docente', None)
 
         # Validar que el rol sea válido
         if role not in ['superuser', 'admin', 'user']:
             return Response({"mensaje": "Rol inválido. Debe ser 'superuser', 'admin' o 'user'."},
+                            status=status.HTTP_400_BAD_REQUEST)
+        # Validar tipo_docente solo si el usuario es docente
+        if role == 'user' and tipo_docente not in ['basificado', 'asignatura']:
+            return Response({"error": "Si el usuario es 'user' (Docente), 'tipo_docente' debe ser 'basificado' o 'asignatura'."},
                             status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -48,6 +53,7 @@ class RegisterUserView(APIView):
             else:  # Docente
                 user.is_staff = False
                 user.is_superuser = False
+                user.tipo_docente = tipo_docente
 
             user.save()
 
