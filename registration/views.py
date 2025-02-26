@@ -78,6 +78,41 @@ def register(request):
             return render(request, 'register.html', {'error': str(e)})
     return render(request, 'registration/register.html')
 
+
+class ResetPasswordView(APIView):
+    """
+    Permite a Administradores y Super Usuarios resetear la contraseña de un docente.
+    La nueva contraseña será igual al username del usuario.
+    """
+    permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
+
+    def post(self, request):
+        # Verificar si el usuario que hace la solicitud es admin o superusuario
+        if not request.user.is_staff:
+            return Response({"error": "No tienes permisos para resetear contraseñas."}, status=status.HTTP_403_FORBIDDEN)
+
+        username = request.data.get("username")
+
+        if not username:
+            return Response({"error": "Se requiere el 'username' del docente."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = CustomUser.objects.get(username=username)
+
+            # Solo permitir resetear la contraseña de docentes
+            if user.role != "user":
+                return Response({"error": "Solo se puede resetear la contraseña de docentes."}, status=status.HTTP_403_FORBIDDEN)
+
+            # Cambiar la contraseña al username del docente
+            user.set_password(user.username)
+            user.save()
+
+            return Response({"message": f"La contraseña de {user.username} ha sido reseteada correctamente."}, status=status.HTTP_200_OK)
+
+        except CustomUser.DoesNotExist:
+            return Response({"error": "No se encontró un usuario con ese username."}, status=status.HTTP_404_NOT_FOUND)
+        
+        
 @login_required
 def dashboard(request):
     if request.user.role == "admin":
