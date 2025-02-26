@@ -19,12 +19,12 @@ class RegisterUserView(APIView):
 
         # Verificar si el usuario que hace la solicitud es admin o superusuario
         if not request.user.is_staff:
-            return Response({"error": "No tienes permisos para crear usuarios."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"mensaje": "No tienes permisos para crear usuarios."}, status=status.HTTP_403_FORBIDDEN)
 
         required_fields = ['username', 'password', 'role']
         for field in required_fields:
             if field not in data:
-                return Response({"error": f"El campo '{field}' es obligatorio"}, status=status.HTTP_400_BAD_REQUEST)
+                return Response({"mensaje": f"El campo '{field}' es obligatorio"}, status=status.HTTP_400_BAD_REQUEST)
 
         username = data.get('username')
         password = make_password(data.get('password'))  # Hashear la contraseña
@@ -32,7 +32,7 @@ class RegisterUserView(APIView):
 
         # Validar que el rol sea válido
         if role not in ['superuser', 'admin', 'user']:
-            return Response({"error": "Rol inválido. Debe ser 'superuser', 'admin' o 'user'."},
+            return Response({"mensaje": "Rol inválido. Debe ser 'superuser', 'admin' o 'user'."},
                             status=status.HTTP_400_BAD_REQUEST)
 
         try:
@@ -51,10 +51,10 @@ class RegisterUserView(APIView):
 
             user.save()
 
-            return Response({"message": f"Usuario {role} creado correctamente", "user_id": user.id}, status=status.HTTP_201_CREATED)
+            return Response({"mensaje": "Usuario creado correctamente"}, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"mensaje": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 # 🔹 Nueva clase para obtener el Token de autenticación
 class CustomAuthToken(ObtainAuthToken):
