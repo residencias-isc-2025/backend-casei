@@ -1,6 +1,68 @@
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
+from rest_framework.authtoken.models import Token
+from registration.serializers import UserSerializer
 from registration.models import CustomUser
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.hashers import make_password
+
+class RegisterUserView(APIView):
+    permission_classes = [IsAuthenticated]  # 🔹 Solo usuarios autenticados pueden acceder
+
+    def post(self, request):
+        """Permite a Administradores y Super Usuarios crear cualquier tipo de usuario"""
+        data = request.data
+
+        # Verificar si el usuario que hace la solicitud es admin o superusuario
+        if not request.user.is_staff:
+            return Response({"error": "No tienes permisos para crear usuarios."}, status=status.HTTP_403_FORBIDDEN)
+
+        required_fields = ['username', 'password', 'role']
+        for field in required_fields:
+            if field not in data:
+                return Response({"error": f"El campo '{field}' es obligatorio"}, status=status.HTTP_400_BAD_REQUEST)
+
+        username = data.get('username')
+        password = make_password(data.get('password'))  # Hashear la contraseña
+        role = data.get('role')
+
+        # Validar que el rol sea válido
+        if role not in ['superuser', 'admin', 'user']:
+            return Response({"error": "Rol inválido. Debe ser 'superuser', 'admin' o 'user'."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            user = CustomUser.objects.create(username=username, password=password, role=role)
+
+            # Asignar permisos según el rol
+            if role == 'superuser':
+                user.is_staff = True
+                user.is_superuser = True
+            elif role == 'admin':
+                user.is_staff = True
+                user.is_superuser = False
+            else:  # Docente
+                user.is_staff = False
+                user.is_superuser = False
+
+            user.save()
+
+            return Response({"message": f"Usuario {role} creado correctamente", "user_id": user.id}, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+# 🔹 Nueva clase para obtener el Token de autenticación
+class CustomAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        """Devuelve el token de autenticación para un usuario"""
+        response = super().post(request, *args, **kwargs)
+        token = Token.objects.get(key=response.data['token'])
+        return Response({'token': token.key, 'user_id': token.user.id, 'username': token.user.username})
 
 def register(request):
     if request.method == 'POST':
