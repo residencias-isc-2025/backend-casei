@@ -11,6 +11,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 
+# Enpoint De Registro
 class RegisterUserView(APIView):
     permission_classes = [IsAuthenticated]  # 🔹 Solo usuarios autenticados pueden acceder
 
@@ -67,7 +68,7 @@ class RegisterUserView(APIView):
         except Exception as e:
             return Response({"mensaje": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-# 🔹 Nueva clase para obtener el Token de autenticación
+# Enpoint de Token de Autorizacion
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
         """Devuelve el token de autenticación para un usuario"""
@@ -89,7 +90,7 @@ def register(request):
             return render(request, 'register.html', {'error': str(e)})
     return render(request, 'registration/register.html')
 
-
+#Endpoint de reseteo de contraseña
 class ResetPasswordView(APIView):
     """
     Permite a Administradores y Super Usuarios resetear la contraseña de un docente.
@@ -123,7 +124,7 @@ class ResetPasswordView(APIView):
         except CustomUser.DoesNotExist:
             return Response({"error": "No se encontró un usuario con ese username."}, status=status.HTTP_404_NOT_FOUND)
         
-#Endpoint de listado
+# Endpoint de listado
 class ListUsersView(ListAPIView):
     permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
     queryset = CustomUser.objects.all()
@@ -134,7 +135,7 @@ class ListUsersView(ListAPIView):
             return CustomUser.objects.all()
         return CustomUser.objects.none()
     
-#Endpoint de jalar la informacion del usuario autenticado
+# Endpoint de jalar la informacion del usuario autenticado
 class UserProfileView(APIView):
     permission_classes = [IsAuthenticated]
 
