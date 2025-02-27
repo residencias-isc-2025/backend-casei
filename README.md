@@ -45,3 +45,5 @@ requirements.txt
 4. URL para el endpoint de listado de usuarios: http://127.0.0.1:8000/registration/users/
 5. URL para el endpoint de informacion del usuario autenticado: http://127.0.0.1:8000/registration/profile/
 6. URL para el endpoint de Formacion Academica: http://127.0.0.1:8000/registration/formacion-academica/
+7. URL para el endpoint de Nombre de Profesor: http://127.0.0.1:8000/registration/nombre-profesor/
+

@@ -55,7 +55,8 @@ class CustomUser(AbstractUser):
         super().save(*args, **kwargs) 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()})"
-    
+
+# Tabla Formacion Academica
 class FormacionAcademica(models.Model):
     NIVEL_CHOICES = [
         ('L', 'Licenciatura'),
@@ -73,3 +74,15 @@ class FormacionAcademica(models.Model):
 
     def __str__(self):
         return f"{self.usuario.username} - {self.get_nivel_display()}"
+    
+# Tabla Nombre del Profesor
+class NombreProfesor(models.Model):
+    usuario = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="nombre_profesor")
+    apellido_paterno = models.CharField(max_length=100)
+    apellido_materno = models.CharField(max_length=100)
+    nombre = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.nombre} {self.apellido_paterno} {self.apellido_materno}"
+    
+    
