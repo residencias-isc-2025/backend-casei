@@ -44,3 +44,4 @@ requirements.txt
 3. URL para el endpoint de reset-password: http://127.0.0.1:8000/registration/reset-password/
 4. URL para el endpoint de listado de usuarios: http://127.0.0.1:8000/registration/users/
 5. URL para el endpoint de informacion del usuario autenticado: http://127.0.0.1:8000/registration/profile/
+6. URL para el endpoint de Formacion Academica: http://127.0.0.1:8000/registration/formacion-academica/

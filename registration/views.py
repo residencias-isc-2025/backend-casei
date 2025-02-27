@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
-from registration.serializers import UserSerializer
-from registration.models import CustomUser
+from registration.serializers import UserSerializer, FormacionAcademicaSerializer
+from registration.models import CustomUser, FormacionAcademica
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -143,7 +143,45 @@ class UserProfileView(APIView):
         serializer = UserSerializer(request.user)
         return Response(serializer.data)
 
+# Endpoint para la Formacion Academica
+class UserFormacionAcademicaView(APIView):
+    
+    permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
 
+    def get(self, request):
+        
+        formacion = FormacionAcademica.objects.filter(usuario=request.user)
+        serializer = FormacionAcademicaSerializer(formacion, many=True)
+        return Response(serializer.data)
+    
+    def post(self, request):
+        
+        data = request.data.copy()  
+        data["usuario"] = request.user.id
+
+        serializer = FormacionAcademicaSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save(usuario=request.user) 
+            return Response(
+                {"message": "Formación académica registrada correctamente.", "data": serializer.data},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request):
+        
+        formacion_id = request.data.get("id")
+
+        try:
+            formacion = FormacionAcademica.objects.get(id=formacion_id, usuario=request.user)
+        except FormacionAcademica.DoesNotExist:
+            return Response({"error": "No tienes permiso para modificar este registro."}, status=status.HTTP_403_FORBIDDEN)
+
+        serializer = FormacionAcademicaSerializer(formacion, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Información actualizada correctamente."}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 @login_required
 def dashboard(request):
     if request.user.role == "admin":
