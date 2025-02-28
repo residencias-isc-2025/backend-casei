@@ -10,7 +10,7 @@ class UserSerializer(serializers.ModelSerializer):
 class FormacionAcademicaSerializer(serializers.ModelSerializer):
     class Meta:
         model = FormacionAcademica
-        fields = ['id', 'nivel', 'nombre', 'institucion_pais', 'anio_obtencion', 'cedula_profesional']
+        fields = ['id', 'nivel', 'nombre', 'anio_obtencion', 'cedula_profesional']
 
 class InstitucionPaisSerializer(serializers.ModelSerializer):
     class Meta:
