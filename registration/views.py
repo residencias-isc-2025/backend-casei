@@ -5,9 +5,9 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
-from registration.serializers import UserSerializer, FormacionAcademicaSerializer
-from registration.models import CustomUser, FormacionAcademica
-from django.shortcuts import render, redirect
+from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 
@@ -195,8 +195,48 @@ class UserFormacionAcademicaView(APIView):
             return Response({"message": "Información actualizada correctamente."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+# EndPoint para la Institucion y Pais
+class InstitucionPaisView(APIView):
+    permission_classes = [IsAuthenticated]
 
+    def get(self, request, pk=None):
+        """Devuelve la lista de todas las instituciones o una en específico si se pasa un ID."""
+        if pk:
+            institucion = get_object_or_404(InstitucionPais, pk=pk)
+            serializer = InstitucionPaisSerializer(institucion)
+            return Response(serializer.data)
+        else:
+            instituciones = InstitucionPais.objects.all()
+            serializer = InstitucionPaisSerializer(instituciones, many=True)
+            return Response(serializer.data)
 
+    def post(self, request):
+        """Permite registrar una nueva institución y país."""
+        serializer = InstitucionPaisSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Institución registrada correctamente.", "data": serializer.data}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk=None):
+        """Permite actualizar los datos de una institución."""
+        if not pk:
+            return Response({"error": "Se requiere un ID para actualizar una institución."}, status=status.HTTP_400_BAD_REQUEST)
+        institucion = get_object_or_404(InstitucionPais, pk=pk)
+        serializer = InstitucionPaisSerializer(institucion, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Institución actualizada correctamente.", "data": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk=None):
+        """Permite eliminar una institución."""
+        if not pk:
+            return Response({"error": "Se requiere un ID para eliminar una institución."}, status=status.HTTP_400_BAD_REQUEST)
+
+        institucion = get_object_or_404(InstitucionPais, pk=pk)
+        institucion.delete()
+        return Response({"message": "Institución eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
 
 @login_required
 def dashboard(request):

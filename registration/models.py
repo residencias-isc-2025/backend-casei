@@ -79,5 +79,13 @@ class FormacionAcademica(models.Model):
     def __str__(self):
         return f"{self.usuario.username} - {self.get_nivel_display()}"
     
+# Institucion y Pais\
+
+class InstitucionPais(models.Model):
+    nombre_institucion = models.CharField(max_length=255)
+    pais = models.CharField(max_length=100)
+
+    def ___str___(self):
+        return f"{self.nombre_institucion} - {self.pais}"
 
     
