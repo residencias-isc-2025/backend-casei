@@ -79,6 +79,40 @@ class RegisterUserView(APIView):
 
         except Exception as e:
             return Response({"mensaje": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    def put(self, request, pk=None):
+        """Permite actualizar la información de un usuario (solo admin/superuser)"""
+        if not pk:
+            return Response({"error": "Se requiere un ID de usuario."}, status=status.HTTP_400_BAD_REQUEST)
+
+        usuario = get_object_or_404(CustomUser, pk=pk)
+
+        if not request.user.is_staff:
+            return Response({"error": "No tienes permisos para modificar usuarios."}, status=status.HTTP_403_FORBIDDEN)
+
+        data = request.data
+        if "username" in data and data["username"] != usuario.username and CustomUser.objects.filter(username=data["username"]).exists():
+            return Response({"error": "El nombre de usuario ya está registrado. Elige otro."}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UserSerializer(usuario, data=data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"mensaje": "Usuario actualizado correctamente", "data": serializer.data}, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk=None):
+        """Permite eliminar un usuario (solo admin/superuser)"""
+        if not pk:
+            return Response({"error": "Se requiere un ID de usuario."}, status=status.HTTP_400_BAD_REQUEST)
+
+        usuario = get_object_or_404(CustomUser, pk=pk)
+
+        if not request.user.is_staff:
+            return Response({"error": "No tienes permisos para eliminar usuarios."}, status=status.HTTP_403_FORBIDDEN)
+
+        usuario.delete()
+        return Response({"mensaje": "Usuario eliminado correctamente."}, status=status.HTTP_204_NO_CONTENT)
+
 
 # Enpoint de Token de Autorizacion
 class CustomAuthToken(ObtainAuthToken):
@@ -101,6 +135,30 @@ def register(request):
             # Manejo de error, por ejemplo, mostrar un mensaje en el template
             return render(request, 'register.html', {'error': str(e)})
     return render(request, 'registration/register.html')
+
+
+# Cabiar la Cotraseña del usuario
+class ChangePasswordView(APIView):
+    """Permite que cualquier usuario autenticado cambie su contraseña"""
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request):
+        """Actualiza la contraseña del usuario autenticado"""
+        usuario = request.user
+        new_password = request.data.get("new_password")
+        confirm_password = request.data.get("confirm_password")
+
+        if not new_password or not confirm_password:
+            return Response({"error": "Ambos campos 'new_password' y 'confirm_password' son obligatorios."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if new_password != confirm_password:
+            return Response({"error": "Las contraseñas no coinciden."}, status=status.HTTP_400_BAD_REQUEST)
+
+        usuario.password = make_password(new_password)
+        usuario.save()
+
+        return Response({"mensaje": "Contraseña actualizada correctamente."}, status=status.HTTP_200_OK)
 
 #Endpoint de reseteo de contraseña
 class ResetPasswordView(APIView):

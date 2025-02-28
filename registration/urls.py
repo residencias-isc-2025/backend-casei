@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import register
-from registration.views import RegisterUserView, CustomAuthToken, ResetPasswordView, ListUsersView, UserProfileView, UserFormacionAcademicaView, InstitucionPaisView
+from registration.views import RegisterUserView, CustomAuthToken, ResetPasswordView, ListUsersView, UserProfileView, UserFormacionAcademicaView, InstitucionPaisView, ChangePasswordView
 
 urlpatterns = [
     path('register/', RegisterUserView.as_view(), name='register_user'),
@@ -11,4 +11,6 @@ urlpatterns = [
     path('formacion-academica/', UserFormacionAcademicaView.as_view(), name='user_formacion_academica'),
     path('institucion-pais/', InstitucionPaisView.as_view(), name='institucion_pais'),
     path('institucion-pais/<int:pk>/', InstitucionPaisView.as_view(), name='institucion_pais_detail'),
+    path('register/<int:pk>/', RegisterUserView.as_view(), name='register_user_detail'),  # Para PUT y DELETE
+    path('change-password/', ChangePasswordView.as_view(), name='change_password'),
 ]
