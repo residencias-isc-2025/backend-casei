@@ -202,7 +202,7 @@ class ListUsersView(ListAPIView):
 
     def get_queryset(self):
         if self.request.user.is_staff:
-            return CustomUser.objects.all()
+            return CustomUser.objects.exclude(id=self.request.user.id)
         return CustomUser.objects.none()
     
 # Endpoint de jalar la informacion del usuario autenticado
