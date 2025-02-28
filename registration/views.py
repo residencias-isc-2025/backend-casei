@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
-from registration.serializers import UserSerializer, FormacionAcademicaSerializer, NombreProfesorSerializer
-from registration.models import CustomUser, FormacionAcademica, NombreProfesor
+from registration.serializers import UserSerializer, FormacionAcademicaSerializer
+from registration.models import CustomUser, FormacionAcademica
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -23,7 +23,7 @@ class RegisterUserView(APIView):
         if not request.user.is_staff:
             return Response({"mensaje": "No tienes permisos para crear usuarios."}, status=status.HTTP_403_FORBIDDEN)
 
-        required_fields = ['username', 'password', 'role']
+        required_fields = ['username', 'password', 'role', 'apellido_materno', 'apellido_paterno', 'nombre', 'fecha_nacimiento']
         for field in required_fields:
             if field not in data:
                 return Response({"mensaje": f"El campo '{field}' es obligatorio"}, status=status.HTTP_400_BAD_REQUEST)
@@ -31,6 +31,10 @@ class RegisterUserView(APIView):
         username = data.get('username')
         password = make_password(data.get('password'))  # Hashear la contraseña
         role = data.get('role')
+        apellido_materno = data.get('apellido_materno')
+        apellido_paterno = data.get('apellido_paterno')
+        nombre = data.get('nombre')
+        fecha_nacimiento = data.get('fecha_nacimiento')
         tipo_docente = data.get('tipo_docente', None)
 
         #Validar si el Usuario ya existe
@@ -47,7 +51,15 @@ class RegisterUserView(APIView):
                             status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            user = CustomUser.objects.create(username=username, password=password, role=role)
+            user = CustomUser.objects.create(
+                username=username, 
+                password=password, 
+                role=role,
+                apellido_materno=apellido_materno,
+                apellido_paterno=apellido_paterno,
+                nombre=nombre,
+                fecha_nacimiento=fecha_nacimiento
+            )
 
             # Asignar permisos según el rol
             if role == 'superuser':
@@ -184,49 +196,7 @@ class UserFormacionAcademicaView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 
-# EndPoint para la tabla Nombre del Maestro
 
-class NombreProfesorView(APIView):
-    """
-    Permite al usuario autenticado gestionar su nombre completo.
-    """
-    permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
-
-    def get(self, request):
-        """Devuelve el nombre completo del usuario autenticado."""
-        try:
-            nombre_profesor = request.user.nombre_profesor
-            serializer = NombreProfesorSerializer(nombre_profesor)
-            return Response(serializer.data)
-        except NombreProfesor.DoesNotExist:
-            return Response({"error": "Aún no has registrado tu nombre."}, status=status.HTTP_404_NOT_FOUND)
-
-    def post(self, request):
-        
-        if hasattr(request.user, 'nombre_profesor'):
-            return Response({"error": "Ya tienes un registro de nombre."}, status=status.HTTP_400_BAD_REQUEST)
-
-        data = request.data.copy()
-        data["usuario"] = request.user.id  # Asociar con el usuario autenticado
-
-        serializer = NombreProfesorSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save(usuario=request.user)  # Asignar el usuario autenticado
-            return Response({"message": "Nombre registrado correctamente.", "data": serializer.data}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request):
-        try:
-            nombre_profesor = request.user.nombre_profesor
-        except NombreProfesor.DoesNotExist:
-            return Response({"error": "No tienes un registro de nombre para actualizar."}, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = NombreProfesorSerializer(nombre_profesor, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message": "Información actualizada correctamente."}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
 
 @login_required
 def dashboard(request):

@@ -32,10 +32,14 @@ class CustomUser(AbstractUser):
     )
 
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
+    apellido_materno = models.CharField(max_length=100, blank=True, null=True)
+    apellido_paterno = models.CharField(max_length=100, blank=True, null=True)
+    nombre = models.CharField(max_length=100, blank=True, null=True)
+    fecha_nacimiento = models.DateField(blank=True, null=True)
     tipo_docente = models.CharField(max_length=20, choices=TIPO_DOCENTE_CHOICES, null=True, blank=True)
 
     def __str__(self):
-        return f"{self.username} ({self.get_role_display()})"
+        return f"{self.username} {self.apellido_materno} {self.apellido_paterno} {self.nombre} {self.fecha_nacimiento} ({self.get_role_display()})"
 
 
     objects = CustomUserManager()
@@ -75,14 +79,5 @@ class FormacionAcademica(models.Model):
     def __str__(self):
         return f"{self.usuario.username} - {self.get_nivel_display()}"
     
-# Tabla Nombre del Profesor
-class NombreProfesor(models.Model):
-    usuario = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="nombre_profesor")
-    apellido_paterno = models.CharField(max_length=100)
-    apellido_materno = models.CharField(max_length=100)
-    nombre = models.CharField(max_length=100)
 
-    def __str__(self):
-        return f"{self.nombre} {self.apellido_paterno} {self.apellido_materno}"
-    
     
