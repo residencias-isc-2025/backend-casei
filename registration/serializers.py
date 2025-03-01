@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -17,3 +17,7 @@ class InstitucionPaisSerializer(serializers.ModelSerializer):
         model = InstitucionPais
         fields = ['id', 'nombre_institucion', 'pais']
         
+class CapacitacionDocenteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CapacitacionDocente
+        fields = ['id', 'tipo_capacitacion', 'institucion_pais', 'año_obtencion', 'horas']
