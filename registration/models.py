@@ -144,5 +144,12 @@ class GestionAcademica(models.Model):
     a_mes_año = models.DateField()
     usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
-def __str__(self):
-    return f"{self.actividad_puesto} en {self.institucion_pais}"
+    def __str__(self):
+        return f"{self.actividad_puesto} en {self.institucion_pais}"
+
+class ProductosAcademicosRelevantes(models.Model):
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    descripcion_producto_academico = models.TextField()
+
+    def __str__(self):
+        return f"{self.usuario.username} - Producto Académico"

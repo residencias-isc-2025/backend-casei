@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
-from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica
+from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer, ProductosAcademicosRelevantesSerializer
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -420,4 +420,38 @@ class GestionAcademicaView(APIView):
         gestion_academica = get_object_or_404(GestionAcademica, pk=pk, usuario=request.user)
         gestion_academica.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+    
+#Endpoint para Productos Academicos Relevantes
+class ProductosAcademicosRelevantesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    # GET: Listar todos los productos académicos del usuario autenticado
+    def get(self, request):
+        productos = ProductosAcademicosRelevantes.objects.filter(usuario=request.user)
+        serializer = ProductosAcademicosRelevantesSerializer(productos, many=True)
+        return Response(serializer.data)
+
+    # POST: Crear un nuevo producto académico
+    def post(self, request):
+        serializer = ProductosAcademicosRelevantesSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(usuario=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # PUT: Actualizar un producto académico existente
+    def put(self, request, pk=None):
+        producto = get_object_or_404(ProductosAcademicosRelevantes, pk=pk, usuario=request.user)
+        serializer = ProductosAcademicosRelevantesSerializer(producto, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # DELETE: Eliminar un producto académico
+    def delete(self, request, pk=None):
+        producto = get_object_or_404(ProductosAcademicosRelevantes, pk=pk, usuario=request.user)
+        producto.delete()
+        return Response({"mensaje": "Producto académico eliminado correctamente."}, status=status.HTTP_204_NO_CONTENT)
+    
     
