@@ -73,6 +73,13 @@ class FormacionAcademica(models.Model):
     usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="formacion_academica")
     nivel = models.CharField(max_length=1, choices=NIVEL_CHOICES)  # Solo valores L, E, M, D
     nombre = models.CharField(max_length=255)
+    institucion_pais = models.ForeignKey(
+        'registration.InstitucionPais',  # Corregido para evitar importación circular
+        on_delete=models.CASCADE,
+        related_name='formaciones_academicas',
+        null=True,
+        blank=True
+    )
     anio_obtencion = models.IntegerField()
     cedula_profesional = models.CharField(max_length=100, unique=True)
 
