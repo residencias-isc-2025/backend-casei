@@ -131,3 +131,18 @@ class ActualizacionDisciplinaria(models.Model):
     def __str__(self):
         return f"{self.tipo_actualizacion} - {self.usuario.username}"
     
+class GestionAcademica(models.Model):
+    actividad_puesto = models.CharField(max_length=255)
+    institucion_pais = models.ForeignKey(
+        'registration.InstitucionPais', 
+        on_delete=models.CASCADE, 
+        related_name='gestion_academica',
+        null=True, 
+        blank=True
+    )
+    d_mes_año = models.DateField()
+    a_mes_año = models.DateField()
+    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
+def __str__(self):
+    return f"{self.actividad_puesto} en {self.institucion_pais}"

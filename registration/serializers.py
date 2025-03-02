@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -26,3 +26,8 @@ class ActualizacionDisciplinarSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActualizacionDisciplinaria
         fields = ['id', 'tipo_actualizacion', 'institucion_pais', 'año_obtencion', 'horas']
+
+class GestionAcademicaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GestionAcademica
+        fields = ['id', 'actividad_puesto', 'institucion_pais', 'd_mes_año', 'a_mes_año', 'usuario']

@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
-from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria
+from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -389,4 +389,39 @@ class ActualizacionDisciplinarView(APIView):
         actualizacion.delete()
         return Response({"mensaje": "Actualización disciplinar eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
     
+#Endpoint para Gestion Academica
+class GestionAcademicaView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk=None):
+        if pk:
+            gestion_academica = get_object_or_404(GestionAcademica, pk=pk, usuario=request.user)
+            serializer = GestionAcademicaSerializer(gestion_academica)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        gestion_academica = GestionAcademica.objects.filter(usuario=request.user)
+        serializer = GestionAcademicaSerializer(gestion_academica, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        data = request.data.copy()
+        data['usuario'] = request.user.id
+        serializer = GestionAcademicaSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk=None):
+        gestion_academica = get_object_or_404(GestionAcademica, pk=pk, usuario=request.user)
+        serializer = GestionAcademicaSerializer(gestion_academica, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk=None):
+        gestion_academica = get_object_or_404(GestionAcademica, pk=pk, usuario=request.user)
+        gestion_academica.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
     
