@@ -143,17 +143,13 @@ class ChangePasswordView(APIView):
     permission_classes = [IsAuthenticated]
 
     def put(self, request):
-        """Actualiza la contraseña del usuario autenticado"""
+        """Actualiza la contraseña del usuario autenticado sin confirmación de contraseña"""
         usuario = request.user
         new_password = request.data.get("new_password")
-        confirm_password = request.data.get("confirm_password")
 
-        if not new_password or not confirm_password:
-            return Response({"error": "Ambos campos 'new_password' y 'confirm_password' son obligatorios."},
+        if not new_password:
+            return Response({"error": "El campo 'new_password' es obligatorio."},
                             status=status.HTTP_400_BAD_REQUEST)
-
-        if new_password != confirm_password:
-            return Response({"error": "Las contraseñas no coinciden."}, status=status.HTTP_400_BAD_REQUEST)
 
         usuario.password = make_password(new_password)
         usuario.save()
