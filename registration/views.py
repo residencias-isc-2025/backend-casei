@@ -1,3 +1,4 @@
+import csv
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -759,3 +760,27 @@ class AllTablesView(APIView):
         return Response(data, status=status.HTTP_200_OK)
     
 
+class LeerCSVView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        archivo_csv = request.FILES.get('archivo_csv')
+
+        if not archivo_csv:
+            return Response({"error": "No se proporcionó ningún archivo CSV."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Leer el archivo CSV y almacenar los datos en una lista
+            datos = []
+            csv_reader = csv.DictReader(archivo_csv.read().decode('utf-8').splitlines())
+            for fila in csv_reader:
+                datos.append(fila)
+
+            # Devolver los datos leídos en la respuesta
+            return Response({
+                "mensaje": "Archivo CSV leído correctamente.",
+                "datos": datos
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            return Response({"error": f"Error al leer el archivo CSV: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
