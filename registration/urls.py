@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import register
-from registration.views import RegisterUserView, CustomAuthToken, ResetPasswordView, ListUsersView, UserProfileView, UserFormacionAcademicaView, InstitucionPaisView, ChangePasswordView, CapacitacionDocenteView, ActualizacionDisciplinarView, GestionAcademicaView, ProductosAcademicosRelevantesView, ExperienciaProfesionalNoAcademicaView, ExperienciaDiseñoIngenierilView, LogroProfesionalView, ParticipacionView
+from registration.views import RegisterUserView, CustomAuthToken, ResetPasswordView, ListUsersView, UserProfileView, UserFormacionAcademicaView, InstitucionPaisView, ChangePasswordView, CapacitacionDocenteView, ActualizacionDisciplinarView, GestionAcademicaView, ProductosAcademicosRelevantesView, ExperienciaProfesionalNoAcademicaView, ExperienciaDiseñoIngenierilView, LogroProfesionalView, ParticipacionView, PremioView
 
 urlpatterns = [
     path('register/', RegisterUserView.as_view(), name='register_user'),
@@ -29,4 +29,6 @@ urlpatterns = [
     path('logros-profesionales/<int:pk>/', LogroProfesionalView.as_view(), name='logros_profesionales_detail'),
     path('participacion/', ParticipacionView.as_view(), name='participacion'),
     path('participacion/<int:pk>/', ParticipacionView.as_view(), name='participacion_detail'),
+    path('premios/', PremioView.as_view(), name='premios'),
+    path('premios/<int:pk>/', PremioView.as_view(), name='premio_detail'),
 ]

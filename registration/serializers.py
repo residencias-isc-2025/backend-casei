@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDiseñoIngenieril, LogrosProfesionales, Participacion
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDiseñoIngenieril, LogrosProfesionales, Participacion, Premio
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -58,4 +58,9 @@ class LogrosProfesionalesSerializer(serializers.ModelSerializer):
 class ParticipacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Participacion
+        fields = '__all__'
+
+class PremioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Premio
         fields = '__all__'
