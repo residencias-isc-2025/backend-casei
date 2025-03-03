@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import register
+from .views import register, AllTablesView
 from registration.views import RegisterUserView, CustomAuthToken, ResetPasswordView, ListUsersView, UserProfileView, UserFormacionAcademicaView, InstitucionPaisView, ChangePasswordView, CapacitacionDocenteView, ActualizacionDisciplinarView, GestionAcademicaView, ProductosAcademicosRelevantesView, ExperienciaProfesionalNoAcademicaView, ExperienciaDiseñoIngenierilView, LogroProfesionalView, ParticipacionView, PremioView, AportacionView
 
 urlpatterns = [
@@ -33,4 +33,6 @@ urlpatterns = [
     path('premios/<int:pk>/', PremioView.as_view(), name='premio_detail'),
     path('aportaciones/', AportacionView.as_view(), name='aportaciones'),
     path('aportaciones/<int:pk>/', AportacionView.as_view(), name='aportacion_detail'),
+
+    path('all-tables/', AllTablesView.as_view(), name='all_tables'),
 ]
