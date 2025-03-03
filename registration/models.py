@@ -106,7 +106,7 @@ class CapacitacionDocente(models.Model):
         null=True, 
         blank=True
     )
-    año_obtencion = models.PositiveIntegerField()
+    anio_obtencion = models.PositiveIntegerField()
     horas = models.PositiveIntegerField()
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='capacitaciones_docentes')
 
@@ -124,7 +124,7 @@ class ActualizacionDisciplinaria(models.Model):
         null=True, 
         blank=True
     )
-    año_obtencion = models.PositiveIntegerField()
+    anio_obtencion = models.PositiveIntegerField()
     horas = models.PositiveIntegerField()
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='actualizacion_disciplinar')
 
@@ -140,8 +140,8 @@ class GestionAcademica(models.Model):
         null=True, 
         blank=True
     )
-    d_mes_año = models.DateField()
-    a_mes_año = models.DateField()
+    d_mes_anio = models.DateField()
+    a_mes_anio = models.DateField()
     usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     def __str__(self):
@@ -158,13 +158,13 @@ class ExperienciaProfesionalNoAcademica(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     actividad_puesto = models.CharField(max_length=255)
     organizacion_empresa = models.CharField(max_length=255)
-    d_mes_año = models.DateField()
-    a_mes_año = models.DateField()
+    d_mes_anio = models.DateField()
+    a_mes_anio = models.DateField()
 
     def ___str___(self):
         return f"{self.usuario.username} - {self.actividad_puesto}"
 
-class ExperienciaDiseñoIngenieril(models.Model):
+class ExperienciaDisenoIngenieril(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     organismo = models.CharField(max_length=255)
     periodo = models.IntegerField()

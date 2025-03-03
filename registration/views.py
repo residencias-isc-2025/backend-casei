@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
-from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer, ProductosAcademicosRelevantesSerializer, ExperienciaProfesionalNoAcademicaSerializer, ExperienciaDiseñoIngenierilSerializer, LogrosProfesionalesSerializer, ParticipacionSerializer, PremioSerializer, AportacionSerializer
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDiseñoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion
+from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer, ProductosAcademicosRelevantesSerializer, ExperienciaProfesionalNoAcademicaSerializer, ExperienciaDisenoIngenierilSerializer, LogrosProfesionalesSerializer, ParticipacionSerializer, PremioSerializer, AportacionSerializer
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDisenoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -169,7 +169,7 @@ class ChangePasswordView(APIView):
         usuario.password = make_password(new_password)
         usuario.save()
 
-        return Response({"mensaje": "Contraseña actualizada correctamente."}, status=status.HTTP_200_OK)
+        return Response({"mensaje": "Contrasena actualizada correctamente."}, status=status.HTTP_200_OK)
 
 #Endpoint de reseteo de contraseña
 class ResetPasswordView(APIView):
@@ -182,7 +182,7 @@ class ResetPasswordView(APIView):
     def post(self, request):
         # Verificar si el usuario que hace la solicitud es admin o superusuario
         if not request.user.is_staff:
-            return Response({"error": "No tienes permisos para resetear contraseñas."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"error": "No tienes permisos para resetear contrasenas."}, status=status.HTTP_403_FORBIDDEN)
 
         username = request.data.get("username")
 
@@ -194,13 +194,13 @@ class ResetPasswordView(APIView):
 
             # Solo permitir resetear la contraseña de docentes
             if user.role != "user":
-                return Response({"error": "Solo se puede resetear la contraseña de docentes."}, status=status.HTTP_403_FORBIDDEN)
+                return Response({"error": "Solo se puede resetear la contrasena de docentes."}, status=status.HTTP_403_FORBIDDEN)
 
             # Cambiar la contraseña al username del docente
             user.set_password(user.username)
             user.save()
 
-            return Response({"message": f"La contraseña de {user.username} ha sido reseteada correctamente."}, status=status.HTTP_200_OK)
+            return Response({"message": f"La contrasena de {user.username} ha sido reseteada correctamente."}, status=status.HTTP_200_OK)
 
         except CustomUser.DoesNotExist:
             return Response({"error": "No se encontró un usuario con ese username."}, status=status.HTTP_404_NOT_FOUND)
@@ -503,18 +503,18 @@ class ExperienciaProfesionalNoAcademicaView(APIView):
         return Response({"mensaje": "Experiencia profesional eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
     
 #Endpoint para Experiencia de Diseño Ingenieril
-class ExperienciaDiseñoIngenierilView(APIView):
+class ExperienciaDisenoIngenierilView(APIView):
     permission_classes = [IsAuthenticated]
 
     # GET: Listar todas las experiencias en diseño ingenieril del usuario autenticado
     def get(self, request):
-        experiencias = ExperienciaDiseñoIngenieril.objects.filter(usuario=request.user)
-        serializer = ExperienciaDiseñoIngenierilSerializer(experiencias, many=True)
+        experiencias = ExperienciaDisenoIngenieril.objects.filter(usuario=request.user)
+        serializer = ExperienciaDisenoIngenierilSerializer(experiencias, many=True)
         return Response(serializer.data)
 
     # POST: Crear una nueva experiencia en diseño ingenieril
     def post(self, request):
-        serializer = ExperienciaDiseñoIngenierilSerializer(data=request.data)
+        serializer = ExperienciaDisenoIngenierilSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(usuario=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -522,8 +522,8 @@ class ExperienciaDiseñoIngenierilView(APIView):
 
     # PUT: Actualizar una experiencia en diseño ingenieril existente
     def put(self, request, pk=None):
-        experiencia = get_object_or_404(ExperienciaDiseñoIngenieril, pk=pk, usuario=request.user)
-        serializer = ExperienciaDiseñoIngenierilSerializer(experiencia, data=request.data, partial=True)
+        experiencia = get_object_or_404(ExperienciaDisenoIngenieril, pk=pk, usuario=request.user)
+        serializer = ExperienciaDisenoIngenierilSerializer(experiencia, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -531,9 +531,9 @@ class ExperienciaDiseñoIngenierilView(APIView):
 
     # DELETE: Eliminar una experiencia en diseño ingenieril
     def delete(self, request, pk=None):
-        experiencia = get_object_or_404(ExperienciaDiseñoIngenieril, pk=pk, usuario=request.user)
+        experiencia = get_object_or_404(ExperienciaDisenoIngenieril, pk=pk, usuario=request.user)
         experiencia.delete()
-        return Response({"mensaje": "Experiencia en diseño ingenieril eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"mensaje": "Experiencia en diseno ingenieril eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
     
 #Endpoint para Logros Profesionales (No academicos)
 class LogroProfesionalView(APIView):
@@ -723,7 +723,7 @@ class AllTablesView(APIView):
             "gestion_academica": GestionAcademicaSerializer(GestionAcademica.objects.all(), many=True).data,
             "productos_academicos_relevantes": ProductosAcademicosRelevantesSerializer(ProductosAcademicosRelevantes.objects.all(), many=True).data,
             "experiencia_no_academica": ExperienciaProfesionalNoAcademicaSerializer(ExperienciaProfesionalNoAcademica.objects.all(), many=True).data,
-            "experiencia_diseno_ingenieril": ExperienciaDiseñoIngenierilSerializer(ExperienciaDiseñoIngenieril.objects.all(), many=True).data,
+            "experiencia_diseno_ingenieril": ExperienciaDisenoIngenierilSerializer(ExperienciaDisenoIngenieril.objects.all(), many=True).data,
             "logros_profesionales": LogrosProfesionalesSerializer(LogrosProfesionales.objects.all(), many=True).data,
             "participacion": ParticipacionSerializer(Participacion.objects.all(), many=True).data,
             "premios": PremioSerializer(Premio.objects.all(), many=True).data,

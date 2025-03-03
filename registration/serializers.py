@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDiseñoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDisenoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,17 +20,17 @@ class InstitucionPaisSerializer(serializers.ModelSerializer):
 class CapacitacionDocenteSerializer(serializers.ModelSerializer):
     class Meta:
         model = CapacitacionDocente
-        fields = ['id', 'tipo_capacitacion', 'institucion_pais', 'año_obtencion', 'horas']
+        fields = ['id', 'tipo_capacitacion', 'institucion_pais', 'anio', 'horas']
 
 class ActualizacionDisciplinarSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActualizacionDisciplinaria
-        fields = ['id', 'tipo_actualizacion', 'institucion_pais', 'año_obtencion', 'horas']
+        fields = ['id', 'tipo_actualizacion', 'institucion_pais', 'anio_obtencion', 'horas']
 
 class GestionAcademicaSerializer(serializers.ModelSerializer):
     class Meta:
         model = GestionAcademica
-        fields = ['id', 'actividad_puesto', 'institucion_pais', 'd_mes_año', 'a_mes_año', 'usuario']
+        fields = ['id', 'actividad_puesto', 'institucion_pais', 'd_mes_anio', 'a_mes_anio', 'usuario']
 
 class ProductosAcademicosRelevantesSerializer(serializers.ModelSerializer):
     class Meta:
@@ -41,12 +41,12 @@ class ProductosAcademicosRelevantesSerializer(serializers.ModelSerializer):
 class ExperienciaProfesionalNoAcademicaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExperienciaProfesionalNoAcademica
-        fields = ['id', 'usuario', 'actividad_puesto', 'organizacion_empresa', 'd_mes_año', 'a_mes_año']
+        fields = ['id', 'usuario', 'actividad_puesto', 'organizacion_empresa', 'd_mes_anio', 'a_mes_anio']
         read_only_fields = ['usuario']
 
-class ExperienciaDiseñoIngenierilSerializer(serializers.ModelSerializer):
+class ExperienciaDisenoIngenierilSerializer(serializers.ModelSerializer):
     class Meta:
-        model = ExperienciaDiseñoIngenieril
+        model = ExperienciaDisenoIngenieril
         fields = ['id', 'usuario', 'organismo', 'periodo', 'nivel_experiencia']
         read_only_fields = ['usuario']
 
