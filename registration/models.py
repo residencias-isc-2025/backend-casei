@@ -173,3 +173,9 @@ class ExperienciaDiseñoIngenieril(models.Model):
     def ___str___(self):
         return f"{self.usuario.username} - {self.organismo}"
     
+class LogrosProfesionales(models.Model):
+    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    descripcion = models.TextField()
+
+    def ___str___(self):
+        return f"{self.usuario.username} - {self.descripcion[:30]}..."
