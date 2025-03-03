@@ -714,19 +714,48 @@ class AllTablesView(APIView):
 
     def get(self, request):
         """Devuelve todos los datos de todas las tablas registradas"""
+        usuario = request.user
+
         data = {
-            "usuarios": UserSerializer(CustomUser.objects.all(), many=True).data,
-            "formacion_academica": FormacionAcademicaSerializer(FormacionAcademica.objects.all(), many=True).data,
-            "institucion_pais": InstitucionPaisSerializer(InstitucionPais.objects.all(), many=True).data,
-            "capacitacion_docente": CapacitacionDocenteSerializer(CapacitacionDocente.objects.all(), many=True).data,
-            "actualizacion_disciplinaria": ActualizacionDisciplinarSerializer(ActualizacionDisciplinaria.objects.all(), many=True).data,
-            "gestion_academica": GestionAcademicaSerializer(GestionAcademica.objects.all(), many=True).data,
-            "productos_academicos_relevantes": ProductosAcademicosRelevantesSerializer(ProductosAcademicosRelevantes.objects.all(), many=True).data,
-            "experiencia_no_academica": ExperienciaProfesionalNoAcademicaSerializer(ExperienciaProfesionalNoAcademica.objects.all(), many=True).data,
-            "experiencia_diseno_ingenieril": ExperienciaDisenoIngenierilSerializer(ExperienciaDisenoIngenieril.objects.all(), many=True).data,
-            "logros_profesionales": LogrosProfesionalesSerializer(LogrosProfesionales.objects.all(), many=True).data,
-            "participacion": ParticipacionSerializer(Participacion.objects.all(), many=True).data,
-            "premios": PremioSerializer(Premio.objects.all(), many=True).data,
-            "aportaciones": AportacionSerializer(Aportacion.objects.all(), many=True).data,
+            "usuario": UserSerializer(usuario).data,
+            "formacion_academica": FormacionAcademicaSerializer(
+                FormacionAcademica.objects.filter(usuario=usuario), many=True
+            ).data,
+            "institucion_pais": InstitucionPaisSerializer(
+                InstitucionPais.objects.filter(formaciones_academicas__usuario=usuario).distinct(), many=True
+            ).data,
+            "capacitacion_docente": CapacitacionDocenteSerializer(
+                CapacitacionDocente.objects.filter(usuario=usuario), many=True
+            ).data,
+            "actualizacion_disciplinaria": ActualizacionDisciplinarSerializer(
+                ActualizacionDisciplinaria.objects.filter(usuario=usuario), many=True
+            ).data,
+            "gestion_academica": GestionAcademicaSerializer(
+                GestionAcademica.objects.filter(usuario=usuario), many=True
+            ).data,
+            "productos_academicos_relevantes": ProductosAcademicosRelevantesSerializer(
+                ProductosAcademicosRelevantes.objects.filter(usuario=usuario), many=True
+            ).data,
+            "experiencia_no_academica": ExperienciaProfesionalNoAcademicaSerializer(
+                ExperienciaProfesionalNoAcademica.objects.filter(usuario=usuario), many=True
+            ).data,
+            "experiencia_diseno_ingenieril": ExperienciaDisenoIngenierilSerializer(
+                ExperienciaDisenoIngenieril.objects.filter(usuario=usuario), many=True
+            ).data,
+            "logros_profesionales": LogrosProfesionalesSerializer(
+                LogrosProfesionales.objects.filter(usuario=usuario), many=True
+            ).data,
+            "participacion": ParticipacionSerializer(
+                Participacion.objects.filter(usuario=usuario), many=True
+            ).data,
+            "premios": PremioSerializer(
+                Premio.objects.filter(usuario=usuario), many=True
+            ).data,
+            "aportaciones": AportacionSerializer(
+                Aportacion.objects.filter(usuario=usuario), many=True
+            ).data,
         }
+
         return Response(data, status=status.HTTP_200_OK)
+    
+
