@@ -23,7 +23,8 @@ class RegisterUserView(APIView):
         if not request.user.is_staff:
             return Response({"mensaje": "No tienes permisos para crear usuarios."}, status=status.HTTP_403_FORBIDDEN)
 
-        required_fields = ['username', 'password', 'role', 'apellido_materno', 'apellido_paterno', 'nombre', 'fecha_nacimiento']
+        # Validar campos obligatorios generales
+        required_fields = ['username', 'password', 'role']
         for field in required_fields:
             if field not in data:
                 return Response({"mensaje": f"El campo '{field}' es obligatorio"}, status=status.HTTP_400_BAD_REQUEST)
@@ -31,29 +32,37 @@ class RegisterUserView(APIView):
         username = data.get('username')
         password = make_password(data.get('password'))  # Hashear la contraseña
         role = data.get('role')
-        apellido_materno = data.get('apellido_materno')
-        apellido_paterno = data.get('apellido_paterno')
-        nombre = data.get('nombre')
-        fecha_nacimiento = data.get('fecha_nacimiento')
-        tipo_docente = data.get('tipo_docente', None)
-
-        #Validar si el Usuario ya existe
-        if CustomUser.objects.filter(username=username).exists():
-            return Response({"error": "El nombre de usuario ya está registrado. Elige otro."}, status=status.HTTP_400_BAD_REQUEST)
 
         # Validar que el rol sea válido
         if role not in ['superuser', 'admin', 'user']:
             return Response({"mensaje": "Rol inválido. Debe ser 'superuser', 'admin' o 'user'."},
                             status=status.HTTP_400_BAD_REQUEST)
+
+        # Si el rol es 'user' (Docente), el campo tipo_docente es obligatorio
+        tipo_docente = data.get('tipo_docente', None)
+        if role == 'user' and not tipo_docente:
+            return Response({"error": "El campo 'tipo_docente' es obligatorio para el rol 'user' (Docente)."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         # Validar tipo_docente solo si el usuario es docente
         if role == 'user' and tipo_docente not in ['basificado', 'asignatura']:
-            return Response({"error": "Si el usuario es 'user' (Docente), 'tipo_docente' debe ser 'basificado' o 'asignatura'."},
+            return Response({"error": "El 'tipo_docente' debe ser 'basificado' o 'asignatura'."},
                             status=status.HTTP_400_BAD_REQUEST)
+
+        # Validar si el Usuario ya existe
+        if CustomUser.objects.filter(username=username).exists():
+            return Response({"error": "El nombre de usuario ya está registrado. Elige otro."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Campos opcionales
+        apellido_materno = data.get('apellido_materno', "")
+        apellido_paterno = data.get('apellido_paterno', "")
+        nombre = data.get('nombre', "")
+        fecha_nacimiento = data.get('fecha_nacimiento', None)
 
         try:
             user = CustomUser.objects.create(
-                username=username, 
-                password=password, 
+                username=username,
+                password=password,
                 role=role,
                 apellido_materno=apellido_materno,
                 apellido_paterno=apellido_paterno,
