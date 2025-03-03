@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
-from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer, ProductosAcademicosRelevantesSerializer, ExperienciaProfesionalNoAcademicaSerializer, ExperienciaDiseñoIngenierilSerializer, LogrosProfesionalesSerializer
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDiseñoIngenieril, LogrosProfesionales
+from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer, ProductosAcademicosRelevantesSerializer, ExperienciaProfesionalNoAcademicaSerializer, ExperienciaDiseñoIngenierilSerializer, LogrosProfesionalesSerializer, ParticipacionSerializer
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDiseñoIngenieril, LogrosProfesionales, Participacion
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -578,3 +578,39 @@ class LogroProfesionalView(APIView):
         logro = get_object_or_404(LogrosProfesionales, pk=pk, usuario=request.user)
         logro.delete()
         return Response({"mensaje": "Logro profesional eliminado correctamente."}, status=status.HTTP_204_NO_CONTENT)
+    
+#Endpoint para Participacion
+class ParticipacionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        """Obtiene todas las participaciones del usuario autenticado"""
+        participaciones = Participacion.objects.filter(usuario=request.user)
+        serializer = ParticipacionSerializer(participaciones, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        """Crea una nueva participación para el usuario autenticado"""
+        data = request.data.copy()
+        data['usuario'] = request.user.id
+        serializer = ParticipacionSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk=None):
+        """Actualiza una participación existente"""
+        participacion = get_object_or_404(Participacion, pk=pk, usuario=request.user)
+        serializer = ParticipacionSerializer(participacion, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk=None):
+        """Elimina una participación existente"""
+        participacion = get_object_or_404(Participacion, pk=pk, usuario=request.user)
+        participacion.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
