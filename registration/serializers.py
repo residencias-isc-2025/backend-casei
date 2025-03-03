@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDiseñoIngenieril
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -42,4 +42,10 @@ class ExperienciaProfesionalNoAcademicaSerializer(serializers.ModelSerializer):
     class Meta:
         model = ExperienciaProfesionalNoAcademica
         fields = ['id', 'usuario', 'actividad_puesto', 'organizacion_empresa', 'd_mes_año', 'a_mes_año']
+        read_only_fields = ['usuario']
+
+class ExperienciaDiseñoIngenierilSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ExperienciaDiseñoIngenieril
+        fields = ['id', 'usuario', 'organismo', 'periodo', 'nivel_experiencia']
         read_only_fields = ['usuario']

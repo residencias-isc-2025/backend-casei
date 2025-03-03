@@ -5,8 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
-from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer, ProductosAcademicosRelevantesSerializer, ExperienciaProfesionalNoAcademicaSerializer
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica
+from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer, ProductosAcademicosRelevantesSerializer, ExperienciaProfesionalNoAcademicaSerializer, ExperienciaDiseñoIngenierilSerializer
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDiseñoIngenieril
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -493,3 +493,35 @@ class ExperienciaProfesionalNoAcademicaView(APIView):
         experiencia.delete()
         return Response({"mensaje": "Experiencia profesional eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
     
+#Endpoint para Experiencia de Diseño Ingenieril
+class ExperienciaDiseñoIngenierilView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    # GET: Listar todas las experiencias en diseño ingenieril del usuario autenticado
+    def get(self, request):
+        experiencias = ExperienciaDiseñoIngenieril.objects.filter(usuario=request.user)
+        serializer = ExperienciaDiseñoIngenierilSerializer(experiencias, many=True)
+        return Response(serializer.data)
+
+    # POST: Crear una nueva experiencia en diseño ingenieril
+    def post(self, request):
+        serializer = ExperienciaDiseñoIngenierilSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(usuario=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # PUT: Actualizar una experiencia en diseño ingenieril existente
+    def put(self, request, pk=None):
+        experiencia = get_object_or_404(ExperienciaDiseñoIngenieril, pk=pk, usuario=request.user)
+        serializer = ExperienciaDiseñoIngenierilSerializer(experiencia, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    # DELETE: Eliminar una experiencia en diseño ingenieril
+    def delete(self, request, pk=None):
+        experiencia = get_object_or_404(ExperienciaDiseñoIngenieril, pk=pk, usuario=request.user)
+        experiencia.delete()
+        return Response({"mensaje": "Experiencia en diseño ingenieril eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
