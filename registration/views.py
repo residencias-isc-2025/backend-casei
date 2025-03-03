@@ -81,23 +81,29 @@ class RegisterUserView(APIView):
             return Response({"mensaje": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
     def put(self, request, pk=None):
-        """Permite actualizar la información de un usuario (solo admin/superuser)"""
+        """Permite actualizar la información de un usuario (admin, superuser o el mismo usuario docente)"""
         if not pk:
             return Response({"error": "Se requiere un ID de usuario."}, status=status.HTTP_400_BAD_REQUEST)
 
         usuario = get_object_or_404(CustomUser, pk=pk)
 
-        if not request.user.is_staff:
-            return Response({"error": "No tienes permisos para modificar usuarios."}, status=status.HTTP_403_FORBIDDEN)
+     # Permitir solo si es admin, superuser o el mismo usuario autenticado si es tipo 'user'
+        if not (request.user.is_staff or request.user == usuario):
+            return Response({"error": "No tienes permisos para modificar este usuario."},
+                            status=status.HTTP_403_FORBIDDEN)
 
         data = request.data
+
+        # Validar si el nombre de usuario ya existe
         if "username" in data and data["username"] != usuario.username and CustomUser.objects.filter(username=data["username"]).exists():
             return Response({"error": "El nombre de usuario ya está registrado. Elige otro."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = UserSerializer(usuario, data=data, partial=True)
+
         if serializer.is_valid():
             serializer.save()
             return Response({"mensaje": "Usuario actualizado correctamente", "data": serializer.data}, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
