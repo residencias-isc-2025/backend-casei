@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import register, AllTablesView
+from .views import register, CurriculumVitaeView
 from registration.views import RegisterUserView, CustomAuthToken, ResetPasswordView, ListUsersView, UserProfileView, UserFormacionAcademicaView, InstitucionPaisView, ChangePasswordView, CapacitacionDocenteView, ActualizacionDisciplinarView, GestionAcademicaView, ProductosAcademicosRelevantesView, ExperienciaProfesionalNoAcademicaView, ExperienciaDisenoIngenierilView, LogroProfesionalView, ParticipacionView, PremioView, AportacionView, LeerCSVView
 
 urlpatterns = [
@@ -34,7 +34,7 @@ urlpatterns = [
     path('aportaciones/', AportacionView.as_view(), name='aportaciones'),
     path('aportaciones/<int:pk>/', AportacionView.as_view(), name='aportacion_detail'),
 
-    path('all-tables/', AllTablesView.as_view(), name='all_tables'),
+    path('curriculum-vitae/', CurriculumVitaeView.as_view(), name='all_tables'),
 
     path('leer-csv/', LeerCSVView.as_view(), name='leer_csv'),
 ]

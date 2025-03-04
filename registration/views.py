@@ -710,7 +710,7 @@ class AportacionView(APIView):
         return Response({"mensaje": "Aportación eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
     
 #Enpoint GET TODAS LAS TABLAS
-class AllTablesView(APIView):
+class CurriculumVitaeView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
