@@ -12,6 +12,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
 
+
+def es_admin_o_superusuario(user):
+    return user.is_staff or user.is_superuser
+
 # Enpoint De Registro
 class RegisterUserView(APIView):
     permission_classes = [IsAuthenticated]  # 🔹 Solo usuarios autenticados pueden acceder
@@ -180,31 +184,26 @@ class ResetPasswordView(APIView):
     """
     permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
 
-    def post(self, request):
-        # Verificar si el usuario que hace la solicitud es admin o superusuario
-        if not request.user.is_staff:
-            return Response({"error": "No tienes permisos para resetear contrasenas."}, status=status.HTTP_403_FORBIDDEN)
+    def post(self, request, pk=None):
+        """
+        Permite que el admin o el superusuario reseteen la contraseña de otros usuarios.
+        """
+        if not pk:
+            return Response({"error": "Se requiere un ID de usuario."}, status=status.HTTP_400_BAD_REQUEST)
 
-        username = request.data.get("username")
+        # Validar si el usuario tiene permisos (admin o superusuario)
+        if not es_admin_o_superusuario(request.user):
+            return Response({"error": "No tienes permisos para realizar esta acción."}, status=status.HTTP_403_FORBIDDEN)
 
-        if not username:
-            return Response({"error": "Se requiere el 'username' del docente."}, status=status.HTTP_400_BAD_REQUEST)
+        usuario = get_object_or_404(CustomUser, pk=pk)
+        
+        # La nueva contraseña será el nombre de usuario
+        nueva_contraseña = usuario.username
+        usuario.password = make_password(nueva_contraseña)
+        usuario.save()
 
-        try:
-            user = CustomUser.objects.get(username=username)
-
-            # Solo permitir resetear la contraseña de docentes
-            if user.role != "user":
-                return Response({"error": "Solo se puede resetear la contrasena de docentes."}, status=status.HTTP_403_FORBIDDEN)
-
-            # Cambiar la contraseña al username del docente
-            user.set_password(user.username)
-            user.save()
-
-            return Response({"message": f"La contrasena de {user.username} ha sido reseteada correctamente."}, status=status.HTTP_200_OK)
-
-        except CustomUser.DoesNotExist:
-            return Response({"error": "No se encontró un usuario con ese username."}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"mensaje": f"Contraseña restablecida correctamente. La nueva contraseña es el nombre de usuario: {usuario.username}"},
+                        status=status.HTTP_200_OK)
         
 # Endpoint de listado
 class ListUsersView(ListAPIView):
@@ -768,7 +767,8 @@ class LeerCSVView(APIView):
 
         if not archivo_csv:
             return Response({"error": "No se proporcionó ningún archivo CSV."}, status=status.HTTP_400_BAD_REQUEST)
-
+        if not es_admin_o_superusuario(request.user):
+            return Response({"error": "No tienes permisos para cargar archivos CSV."}, status=status.HTTP_403_FORBIDDEN)
         try:
             # Leer el archivo CSV y almacenar los datos en una lista
             datos = []
