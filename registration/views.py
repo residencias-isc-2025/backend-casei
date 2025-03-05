@@ -756,7 +756,7 @@ class CurriculumVitaeView(APIView):
         return Response(data, status=status.HTTP_200_OK)
     
 
-class LeerCSVView(APIView):
+class CreateUsersByCsvView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
@@ -767,17 +767,68 @@ class LeerCSVView(APIView):
         if not es_admin_o_superusuario(request.user):
             return Response({"error": "No tienes permisos para cargar archivos CSV."}, status=status.HTTP_403_FORBIDDEN)
         try:
-            # Leer el archivo CSV y almacenar los datos en una lista
-            datos = []
+            # Leer el archivo CSV y registrar usuarios
             csv_reader = csv.DictReader(archivo_csv.read().decode('utf-8').splitlines())
-            for fila in csv_reader:
-                datos.append(fila)
+            usuarios_creados = []
+            errores = []
 
-            # Devolver los datos leídos en la respuesta
+            for fila in csv_reader:
+                try:
+                    # Extraer datos del CSV
+                    username = fila.get('username')
+                    role = fila.get('role')
+                    tipo_docente = fila.get('tipo_docente', None) if role == 'user' else None
+                    apellido_materno = fila.get('apellido_materno', "")
+                    apellido_paterno = fila.get('apellido_paterno', "")
+                    nombre = fila.get('nombre', "")
+                    fecha_nacimiento = fila.get('fecha_nacimiento', None)
+
+                    # Validar campos obligatorios
+                    if not username or not role:
+                        errores.append(f"Faltan datos obligatorios en la fila: {fila}")
+                        continue
+
+                    if role not in ['superuser', 'admin', 'user']:
+                        errores.append(f"Rol inválido para el usuario '{username}'.")
+                        continue
+
+                    # Validar tipo_docente solo si el usuario es docente
+                    if role == 'user' and tipo_docente not in ['basificado', 'asignatura']:
+                        errores.append(f"El 'tipo_docente' debe ser 'basificado' o 'asignatura' para el usuario '{username}'.")
+                        continue
+
+                    # Verificar si el Usuario ya existe
+                    if CustomUser.objects.filter(username=username).exists():
+                        errores.append(f"El nombre de usuario '{username}' ya está registrado.")
+                        continue
+
+                    # Crear el usuario
+                    user = CustomUser.objects.create(
+                        username=username,
+                        password=make_password(username),  # La contraseña será el mismo username
+                        role=role,
+                        tipo_docente=tipo_docente,
+                        apellido_materno=apellido_materno,
+                        apellido_paterno=apellido_paterno,
+                        nombre=nombre,
+                        fecha_nacimiento=fecha_nacimiento,
+                        is_staff=(role in ['admin', 'superuser']),
+                        is_superuser=(role == 'superuser')
+                    )
+                    usuarios_creados.append(username)
+
+                except Exception as e:
+                    errores.append(f"Error al crear el usuario con los datos: {fila}. Error: {str(e)}")
+
+            resultado = {
+                "usuarios_creados": usuarios_creados,
+                "errores": errores
+            }
+
             return Response({
-                "mensaje": "Archivo CSV leído correctamente.",
-                "datos": datos
+                "mensaje": f"Se procesaron {len(usuarios_creados)} usuarios.",
+                "resultado": resultado
             }, status=status.HTTP_200_OK)
 
         except Exception as e:
-            return Response({"error": f"Error al leer el archivo CSV: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error": f"Error al procesar el archivo CSV: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
