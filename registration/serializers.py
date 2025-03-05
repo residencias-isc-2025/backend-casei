@@ -4,8 +4,8 @@ from registration.models import CustomUser, FormacionAcademica, InstitucionPais,
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = CustomUser
-        fields = ['id', 'username', 'role', 'apellido_materno', 'apellido_paterno', 'nombre',
-                   'fecha_nacimiento', 'tipo_docente']
+        fields = ['id', 'username', 'role', 'estado', 'apellido_materno', 'apellido_paterno', 'nombre', 
+                  'fecha_nacimiento', 'tipo_docente']
 
 class FormacionAcademicaSerializer(serializers.ModelSerializer):
     class Meta:

@@ -17,6 +17,7 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('role', 'superuser')
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_superuser', True)
+        extra_fields.setdefault('estado', 'activo')
 
         return self.create_user(username, password, **extra_fields)
 
@@ -32,34 +33,39 @@ class CustomUser(AbstractUser):
         ('asignatura', 'basificado'),
     )
 
+    ESTADO_CHOICES = (
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo'),
+    )
+
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, default='user')
+    estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='activo')
     apellido_materno = models.CharField(max_length=100, blank=True, null=True)
     apellido_paterno = models.CharField(max_length=100, blank=True, null=True)
     nombre = models.CharField(max_length=100, blank=True, null=True)
     fecha_nacimiento = models.DateField(blank=True, null=True)
     tipo_docente = models.CharField(max_length=20, choices=TIPO_DOCENTE_CHOICES, null=True, blank=True)
 
-    def __str__(self):
-        return f"{self.username} {self.apellido_materno} {self.apellido_paterno} {self.nombre} {self.fecha_nacimiento} ({self.get_role_display()})"
-
-
     objects = CustomUserManager()
 
     def save(self, *args, **kwargs):
         """Otorga privilegios de staff a los superusuarios automáticamente"""
-        if self.role == 'superuser':  # Si el usuario es Super Usuario
+        if self.role == 'superuser': 
             self.is_staff = True
-            self.is_superuser = True  # También darle permisos de superusuario
-        elif self.role == 'admin':  # Si es Administrador
+            self.is_superuser = True
+        elif self.role == 'admin':
             self.is_staff = True
-            self.is_superuser = False  # Un admin puede tener staff, pero no superuser
-        else:  # Si es un usuario normal (Docente)
+            self.is_superuser = False
+        else:
             self.is_staff = False
             self.is_superuser = False
 
+        self.is_active = self.estado == 'activo'
+        
         super().save(*args, **kwargs) 
+
     def __str__(self):
-        return f"{self.username} ({self.get_role_display()})"
+        return f"{self.username} ({self.get_role_display()}) - {self.get_estado_display()}"
 
 # Tabla Formacion Academica
 class FormacionAcademica(models.Model):

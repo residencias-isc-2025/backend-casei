@@ -121,18 +121,41 @@ class RegisterUserView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
-        """Permite eliminar un usuario (solo admin/superuser)"""
+        """Inhabilita (marca como inactivo) a un usuario en lugar de eliminarlo"""
         if not pk:
             return Response({"error": "Se requiere un ID de usuario."}, status=status.HTTP_400_BAD_REQUEST)
 
         usuario = get_object_or_404(CustomUser, pk=pk)
 
         if not request.user.is_staff:
-            return Response({"error": "No tienes permisos para eliminar usuarios."}, status=status.HTTP_403_FORBIDDEN)
+            return Response({"error": "No tienes permisos para inhabilitar usuarios."}, status=status.HTTP_403_FORBIDDEN)
 
-        usuario.delete()
-        return Response({"mensaje": "Usuario eliminado correctamente."}, status=status.HTTP_204_NO_CONTENT)
+        usuario.estado = 'inactivo'
+        usuario.save()
 
+        return Response({"mensaje": f"Usuario {usuario.username} marcado como inactivo correctamente."}, status=status.HTTP_200_OK)
+
+#Endpoint para Habilitar a un usuario Deshabilitado
+class HabilitarUsuarioView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk=None):
+        """Habilita un usuario previamente inhabilitado (marca como activo)"""
+        if not pk:
+            return Response({"error": "Se requiere un ID de usuario."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if not request.user.is_staff:
+            return Response({"error": "No tienes permisos para habilitar usuarios."}, status=status.HTTP_403_FORBIDDEN)
+
+        usuario = get_object_or_404(CustomUser, pk=pk)
+
+        if usuario.estado == 'activo':
+            return Response({"mensaje": f"El usuario {usuario.username} ya está activo."}, status=status.HTTP_400_BAD_REQUEST)
+
+        usuario.estado = 'activo'
+        usuario.save()
+
+        return Response({"mensaje": f"Usuario {usuario.username} habilitado correctamente."}, status=status.HTTP_200_OK)
 
 # Enpoint de Token de Autorizacion
 class CustomAuthToken(ObtainAuthToken):
