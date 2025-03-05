@@ -721,9 +721,6 @@ class CurriculumVitaeView(APIView):
             "formacion_academica": FormacionAcademicaSerializer(
                 FormacionAcademica.objects.filter(usuario=usuario), many=True
             ).data,
-            "institucion_pais": InstitucionPaisSerializer(
-                InstitucionPais.objects.filter(formaciones_academicas__usuario=usuario).distinct(), many=True
-            ).data,
             "capacitacion_docente": CapacitacionDocenteSerializer(
                 CapacitacionDocente.objects.filter(usuario=usuario), many=True
             ).data,
