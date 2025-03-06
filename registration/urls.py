@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import register, CurriculumVitaeView
-from registration.views import RegisterUserView, CustomAuthToken, ResetPasswordView, ListUsersView, UserProfileView, UserFormacionAcademicaView, InstitucionPaisView, ChangePasswordView, CapacitacionDocenteView, ActualizacionDisciplinarView, GestionAcademicaView, ProductosAcademicosRelevantesView, ExperienciaProfesionalNoAcademicaView, ExperienciaDisenoIngenierilView, LogroProfesionalView, ParticipacionView, PremioView, AportacionView, CreateUsersByCsvView, HabilitarUsuarioView
+from registration.views import RegisterUserView, CustomAuthToken, ResetPasswordView, ListUsersView, UserProfileView, UserFormacionAcademicaView, InstitucionPaisView, ChangePasswordView, CapacitacionDocenteView, ActualizacionDisciplinarView, GestionAcademicaView, ProductosAcademicosRelevantesView, ExperienciaProfesionalNoAcademicaView, ExperienciaDisenoIngenierilView, LogroProfesionalView, ParticipacionView, PremioView, AportacionView, CreateUsersByCsvView, HabilitarUsuarioView, HabilitarInstitucionView
 
 urlpatterns = [
     path('register/', RegisterUserView.as_view(), name='register_user'),
@@ -38,5 +38,6 @@ urlpatterns = [
 
     path('create-users-by-csv/', CreateUsersByCsvView.as_view(), name='leer_csv'),
     path('habilitar-usuario/<int:pk>/', HabilitarUsuarioView.as_view(), name='habilitar_usuario'),
+    path('habilitar-institucion/<int:pk>/', HabilitarInstitucionView.as_view(), name='habilitar_institucion'),
 
 ]

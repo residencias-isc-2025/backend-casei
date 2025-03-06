@@ -61,7 +61,7 @@ class CustomUser(AbstractUser):
             self.is_superuser = False
 
         self.is_active = self.estado == 'activo'
-        
+
         super().save(*args, **kwargs) 
 
     def __str__(self):
@@ -95,11 +95,17 @@ class FormacionAcademica(models.Model):
 # Institucion y Pais\
 
 class InstitucionPais(models.Model):
+    ESTADO_CHOICES = (
+        ('activo', 'Activo'),
+        ('inactivo', 'Inactivo')
+    )
+    
     nombre_institucion = models.CharField(max_length=255)
     pais = models.CharField(max_length=100)
+    estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='activo')
 
     def ___str___(self):
-        return f"{self.nombre_institucion} - {self.pais}"
+        return f"{self.nombre_institucion} - {self.pais} ({self.get_estado_display()})"
 
 # Capacitacion Docente
 

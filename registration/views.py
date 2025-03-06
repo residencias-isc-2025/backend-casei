@@ -322,13 +322,37 @@ class InstitucionPaisView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
-        """Permite eliminar una institución."""
+        """Inhabilita (marca como inactiva) una institución en lugar de eliminarla."""
         if not pk:
-            return Response({"error": "Se requiere un ID para eliminar una institución."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": "Se requiere un ID para inhabilitar una institución."}, status=status.HTTP_400_BAD_REQUEST)
 
         institucion = get_object_or_404(InstitucionPais, pk=pk)
-        institucion.delete()
-        return Response({"message": "Institución eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
+
+        institucion.estado = 'inactivo'
+        institucion.save()
+
+        return Response({"message": "Institución marcada como inactiva correctamente."}, status=status.HTTP_200_OK)
+
+#Endpoint para Habilitar una institucion
+class HabilitarInstitucionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk=None):
+        """Habilita una institución previamente marcada como inactiva."""
+        if not pk:
+            return Response({"error": "Se requiere un ID de institución para habilitarla."}, status=status.HTTP_400_BAD_REQUEST)
+
+        institucion = get_object_or_404(InstitucionPais, pk=pk)
+
+        if institucion.estado == 'activo':
+            return Response({"mensaje": f"La institución {institucion.nombre_institucion} ya está activa."}, status=status.HTTP_400_BAD_REQUEST)
+
+        institucion.estado = 'activo'
+        institucion.save()
+
+        return Response({"mensaje": f"Institución {institucion.nombre_institucion} habilitada correctamente."}, status=status.HTTP_200_OK)
+
+
 
 @login_required
 def dashboard(request):
