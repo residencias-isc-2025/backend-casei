@@ -225,7 +225,7 @@ class ResetPasswordView(APIView):
         usuario.password = make_password(nueva_contraseña)
         usuario.save()
 
-        return Response({"mensaje": f"Contraseña restablecida correctamente. La nueva contraseña es el nombre de usuario: {usuario.username}"},
+        return Response({"mensaje": f"Contraseña restablecida correctamente."},
                         status=status.HTTP_200_OK)
         
 # Endpoint de listado

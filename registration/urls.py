@@ -39,5 +39,6 @@ urlpatterns = [
     path('create-users-by-csv/', CreateUsersByCsvView.as_view(), name='leer_csv'),
     path('habilitar-usuario/<int:pk>/', HabilitarUsuarioView.as_view(), name='habilitar_usuario'),
     path('habilitar-institucion/<int:pk>/', HabilitarInstitucionView.as_view(), name='habilitar_institucion'),
+    path('reset-password/<int:pk>/', ResetPasswordView.as_view(), name='reset_password'),
 
 ]
