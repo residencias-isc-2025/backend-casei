@@ -1,4 +1,5 @@
 import csv
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -15,6 +16,9 @@ from django.contrib.auth.hashers import make_password
 
 def es_admin_o_superusuario(user):
     return user.is_staff or user.is_superuser
+
+class CustomPageNumberPagination(PageNumberPagination):
+    page_size = 10
 
 # Enpoint De Registro
 class RegisterUserView(APIView):
@@ -235,6 +239,8 @@ class ListUsersView(ListAPIView):
     serializer_class = UserSerializer
 
     def get_queryset(self):
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
         if self.request.user.is_staff:
             return CustomUser.objects.exclude(id=self.request.user.id)
         return CustomUser.objects.none()
@@ -253,10 +259,12 @@ class UserFormacionAcademicaView(APIView):
     permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
 
     def get(self, request):
-        
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
         formacion = FormacionAcademica.objects.filter(usuario=request.user)
-        serializer = FormacionAcademicaSerializer(formacion, many=True)
-        return Response(serializer.data)
+        result_page = paginator.paginate_queryset(formacion, request)
+        serializer = FormacionAcademicaSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
     
     def post(self, request):
         
@@ -293,14 +301,17 @@ class InstitucionPaisView(APIView):
 
     def get(self, request, pk=None):
         """Devuelve la lista de todas las instituciones o una en específico si se pasa un ID."""
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
         if pk:
             institucion = get_object_or_404(InstitucionPais, pk=pk)
             serializer = InstitucionPaisSerializer(institucion)
             return Response(serializer.data)
         else:
             instituciones = InstitucionPais.objects.all()
-            serializer = InstitucionPaisSerializer(instituciones, many=True)
-            return Response(serializer.data)
+            result_page = paginator.paginate_queryset(instituciones, request)
+            serializer = InstitucionPaisSerializer(result_page, many=True)
+            return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         """Permite registrar una nueva institución y país."""
@@ -374,9 +385,12 @@ class CapacitacionDocenteView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
         capacitaciones = CapacitacionDocente.objects.filter(usuario=request.user)
-        serializer = CapacitacionDocenteSerializer(capacitaciones, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        result_page = paginator.paginate_queryset(capacitaciones, request)
+        serializer = CapacitacionDocenteSerializer(result_page, many=True)      
+        return paginator.get_paginated_response(serializer.data)
     
     def post(self, request):
         serializer = CapacitacionDocenteSerializer(data=request.data)
@@ -409,14 +423,17 @@ class ActualizacionDisciplinarView(APIView):
 
     def get(self, request, pk=None):
         """Devuelve las actualizaciones disciplinarias del usuario autenticado"""
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
         if pk:
             actualizacion = get_object_or_404(ActualizacionDisciplinaria, pk=pk, usuario=request.user)
             serializer = ActualizacionDisciplinarSerializer(actualizacion)
             return Response(serializer.data)
         
         actualizaciones = ActualizacionDisciplinaria.objects.filter(usuario=request.user)
-        serializer = ActualizacionDisciplinarSerializer(actualizaciones, many=True)
-        return Response(serializer.data)
+        result_page = paginator.paginate_queryset(actualizaciones, request)
+        serializer = ActualizacionDisciplinarSerializer(result_page, many=True)        
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         """Crea una nueva actualización disciplinar para el usuario autenticado"""
@@ -458,8 +475,11 @@ class GestionAcademicaView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         
         gestion_academica = GestionAcademica.objects.filter(usuario=request.user)
-        serializer = GestionAcademicaSerializer(gestion_academica, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # Número de elementos por página
+        resultado_paginado = paginator.paginate_queryset(gestion_academica, request)
+        serializer = GestionAcademicaSerializer(resultado_paginado, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         data = request.data.copy()
@@ -490,8 +510,11 @@ class ProductosAcademicosRelevantesView(APIView):
     # GET: Listar todos los productos académicos del usuario autenticado
     def get(self, request):
         productos = ProductosAcademicosRelevantes.objects.filter(usuario=request.user)
-        serializer = ProductosAcademicosRelevantesSerializer(productos, many=True)
-        return Response(serializer.data)
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # Número de elementos por página
+        resultado_paginado = paginator.paginate_queryset(productos, request)
+        serializer = ProductosAcademicosRelevantesSerializer(resultado_paginado, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     # POST: Crear un nuevo producto académico
     def post(self, request):
@@ -523,8 +546,11 @@ class ExperienciaProfesionalNoAcademicaView(APIView):
     # GET: Listar todas las experiencias del usuario autenticado
     def get(self, request):
         experiencias = ExperienciaProfesionalNoAcademica.objects.filter(usuario=request.user)
-        serializer = ExperienciaProfesionalNoAcademicaSerializer(experiencias, many=True)
-        return Response(serializer.data)
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # Número de elementos por página
+        resultado_paginado = paginator.paginate_queryset(experiencias, request)
+        serializer = ExperienciaProfesionalNoAcademicaSerializer(resultado_paginado, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     # POST: Crear una nueva experiencia profesional
     def post(self, request):
@@ -556,8 +582,11 @@ class ExperienciaDisenoIngenierilView(APIView):
     # GET: Listar todas las experiencias en diseño ingenieril del usuario autenticado
     def get(self, request):
         experiencias = ExperienciaDisenoIngenieril.objects.filter(usuario=request.user)
-        serializer = ExperienciaDisenoIngenierilSerializer(experiencias, many=True)
-        return Response(serializer.data)
+        paginator = PageNumberPagination()
+        paginator.page_size = 10  # Número de elementos por página
+        resultado_paginado = paginator.paginate_queryset(experiencias, request)
+        serializer = ExperienciaDisenoIngenierilSerializer(resultado_paginado, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     # POST: Crear una nueva experiencia en diseño ingenieril
     def post(self, request):
@@ -589,8 +618,11 @@ class LogroProfesionalView(APIView):
     def get(self, request):
         """Obtiene todos los logros profesionales del usuario autenticado."""
         logros = LogrosProfesionales.objects.filter(usuario=request.user)
-        serializer = LogrosProfesionalesSerializer(logros, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        resultado_paginado = paginator.paginate_queryset(logros, request)
+        serializer = LogrosProfesionalesSerializer(resultado_paginado, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         """Crea un nuevo logro profesional para el usuario autenticado."""
@@ -633,8 +665,11 @@ class ParticipacionView(APIView):
     def get(self, request):
         """Obtiene todas las participaciones del usuario autenticado"""
         participaciones = Participacion.objects.filter(usuario=request.user)
-        serializer = ParticipacionSerializer(participaciones, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        resultado_paginado = paginator.paginate_queryset(participaciones, request)
+        serializer = ParticipacionSerializer(resultado_paginado, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         """Crea una nueva participación para el usuario autenticado"""
@@ -668,8 +703,11 @@ class PremioView(APIView):
     def get(self, request):
         """Obtiene todos los premios del usuario autenticado"""
         premios = Premio.objects.filter(usuario=request.user)
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        resultado_paginado = paginator.paginate_queryset(premios, request)
         serializer = PremioSerializer(premios, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         """Crea un nuevo premio para el usuario autenticado"""
@@ -715,8 +753,11 @@ class AportacionView(APIView):
     def get(self, request):
         """Obtiene todas las aportaciones del usuario autenticado"""
         aportaciones = Aportacion.objects.filter(usuario=request.user)
-        serializer = AportacionSerializer(aportaciones, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        resultado_paginado = paginator.paginate_queryset(aportaciones, request)
+        serializer = AportacionSerializer(resultado_paginado, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         """Crea una nueva aportación para el usuario autenticado"""
@@ -762,45 +803,59 @@ class CurriculumVitaeView(APIView):
     def get(self, request):
         """Devuelve todos los datos de todas las tablas registradas"""
         usuario = request.user
+        paginator = CustomPageNumberPagination()
 
         data = {
             "usuario": UserSerializer(usuario).data,
-            "formacion_academica": FormacionAcademicaSerializer(
-                FormacionAcademica.objects.filter(usuario=usuario), many=True
-            ).data,
-            "capacitacion_docente": CapacitacionDocenteSerializer(
-                CapacitacionDocente.objects.filter(usuario=usuario), many=True
-            ).data,
-            "actualizacion_disciplinaria": ActualizacionDisciplinarSerializer(
-                ActualizacionDisciplinaria.objects.filter(usuario=usuario), many=True
-            ).data,
-            "gestion_academica": GestionAcademicaSerializer(
-                GestionAcademica.objects.filter(usuario=usuario), many=True
-            ).data,
-            "productos_academicos_relevantes": ProductosAcademicosRelevantesSerializer(
-                ProductosAcademicosRelevantes.objects.filter(usuario=usuario), many=True
-            ).data,
-            "experiencia_no_academica": ExperienciaProfesionalNoAcademicaSerializer(
-                ExperienciaProfesionalNoAcademica.objects.filter(usuario=usuario), many=True
-            ).data,
-            "experiencia_diseno_ingenieril": ExperienciaDisenoIngenierilSerializer(
-                ExperienciaDisenoIngenieril.objects.filter(usuario=usuario), many=True
-            ).data,
-            "logros_profesionales": LogrosProfesionalesSerializer(
-                LogrosProfesionales.objects.filter(usuario=usuario), many=True
-            ).data,
-            "participacion": ParticipacionSerializer(
-                Participacion.objects.filter(usuario=usuario), many=True
-            ).data,
-            "premios": PremioSerializer(
-                Premio.objects.filter(usuario=usuario), many=True
-            ).data,
-            "aportaciones": AportacionSerializer(
-                Aportacion.objects.filter(usuario=usuario), many=True
-            ).data,
+            "formacion_academica": paginator.paginate_queryset(
+                FormacionAcademica.objects.filter(usuario=usuario), request
+            ),
+            "capacitacion_docente": paginator.paginate_queryset(
+                CapacitacionDocente.objects.filter(usuario=usuario), request
+            ),
+            "actualizacion_disciplinaria": paginator.paginate_queryset(
+                ActualizacionDisciplinaria.objects.filter(usuario=usuario), request
+            ),
+            "gestion_academica": paginator.paginate_queryset(
+                GestionAcademica.objects.filter(usuario=usuario), request
+            ),
+            "productos_academicos_relevantes": paginator.paginate_queryset(
+                ProductosAcademicosRelevantes.objects.filter(usuario=usuario), request
+            ),
+            "experiencia_no_academica": paginator.paginate_queryset(
+                ExperienciaProfesionalNoAcademica.objects.filter(usuario=usuario), request
+            ),
+            "experiencia_diseno_ingenieril": paginator.paginate_queryset(
+                ExperienciaDisenoIngenieril.objects.filter(usuario=usuario), request
+            ),
+            "logros_profesionales": paginator.paginate_queryset(
+                LogrosProfesionales.objects.filter(usuario=usuario), request
+            ),
+            "participacion": paginator.paginate_queryset(
+                Participacion.objects.filter(usuario=usuario), request
+            ),
+            "premios": paginator.paginate_queryset(
+                Premio.objects.filter(usuario=usuario), request
+            ),
+            "aportaciones": paginator.paginate_queryset(
+                Aportacion.objects.filter(usuario=usuario), request
+            ),
+        }
+        paginated_data = {
+            "formacion_academica": FormacionAcademicaSerializer(data["formacion_academica"], many=True).data,
+            "capacitacion_docente": CapacitacionDocenteSerializer(data["capacitacion_docente"], many=True).data,
+            "actualizacion_disciplinaria": ActualizacionDisciplinarSerializer(data["actualizacion_disciplinaria"], many=True).data,
+            "gestion_academica": GestionAcademicaSerializer(data["gestion_academica"], many=True).data,
+            "productos_academicos_relevantes": ProductosAcademicosRelevantesSerializer(data["productos_academicos_relevantes"], many=True).data,
+            "experiencia_no_academica": ExperienciaProfesionalNoAcademicaSerializer(data["experiencia_no_academica"], many=True).data,
+            "experiencia_diseno_ingenieril": ExperienciaDisenoIngenierilSerializer(data["experiencia_diseno_ingenieril"], many=True).data,
+            "logros_profesionales": LogrosProfesionalesSerializer(data["logros_profesionales"], many=True).data,
+            "participacion": ParticipacionSerializer(data["participacion"], many=True).data,
+            "premios": PremioSerializer(data["premios"], many=True).data,
+            "aportaciones": AportacionSerializer(data["aportaciones"], many=True).data,
         }
 
-        return Response(data, status=status.HTTP_200_OK)
+        return paginator.get_paginated_response(paginated_data)
     
 
 class CreateUsersByCsvView(APIView):

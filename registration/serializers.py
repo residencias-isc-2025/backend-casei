@@ -15,7 +15,7 @@ class FormacionAcademicaSerializer(serializers.ModelSerializer):
 class InstitucionPaisSerializer(serializers.ModelSerializer):
     class Meta:
         model = InstitucionPais
-        fields = ['id', 'nombre_institucion', 'pais']
+        fields = ['id', 'nombre_institucion', 'pais', 'estado']
         
 class CapacitacionDocenteSerializer(serializers.ModelSerializer):
     class Meta:
