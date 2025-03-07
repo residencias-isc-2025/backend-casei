@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
-from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer, ProductosAcademicosRelevantesSerializer, ExperienciaProfesionalNoAcademicaSerializer, ExperienciaDisenoIngenierilSerializer, LogrosProfesionalesSerializer, ParticipacionSerializer, PremioSerializer, AportacionSerializer
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDisenoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion
+from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer, ProductosAcademicosRelevantesSerializer, ExperienciaProfesionalNoAcademicaSerializer, ExperienciaDisenoIngenierilSerializer, LogrosProfesionalesSerializer, ParticipacionSerializer, PremioSerializer, AportacionSerializer, AreaAdscripcionSerializer
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDisenoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion, AreaAdscripcion
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -67,6 +67,15 @@ class RegisterUserView(APIView):
         apellido_paterno = data.get('apellido_paterno', "")
         nombre = data.get('nombre', "")
         fecha_nacimiento = data.get('fecha_nacimiento', None)
+        area_adscripcion_id = data.get('area_adscripcion', None)  # ID del área de adscripción (opcional)
+
+        # Validar que el área de adscripción exista si se proporciona
+        area_adscripcion = None
+        if area_adscripcion_id:
+            try:
+                area_adscripcion = AreaAdscripcion.objects.get(id=area_adscripcion_id)
+            except AreaAdscripcion.DoesNotExist:
+                return Response({"error": "El área de adscripción proporcionada no es válida."}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
             user = CustomUser.objects.create(
@@ -76,7 +85,8 @@ class RegisterUserView(APIView):
                 apellido_materno=apellido_materno,
                 apellido_paterno=apellido_paterno,
                 nombre=nombre,
-                fecha_nacimiento=fecha_nacimiento
+                fecha_nacimiento=fecha_nacimiento,
+                area_adscripcion=area_adscripcion
             )
 
             # Asignar permisos según el rol
@@ -105,7 +115,7 @@ class RegisterUserView(APIView):
 
         usuario = get_object_or_404(CustomUser, pk=pk)
 
-     # Permitir solo si es admin, superuser o el mismo usuario autenticado si es tipo 'user'
+        # Permitir solo si es admin, superuser o el mismo usuario autenticado si es tipo 'user'
         if not (request.user.is_staff or request.user == usuario):
             return Response({"error": "No tienes permisos para modificar este usuario."},
                             status=status.HTTP_403_FORBIDDEN)
@@ -115,6 +125,15 @@ class RegisterUserView(APIView):
         # Validar si el nombre de usuario ya existe
         if "username" in data and data["username"] != usuario.username and CustomUser.objects.filter(username=data["username"]).exists():
             return Response({"error": "El nombre de usuario ya está registrado. Elige otro."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Validar el área de adscripción si se proporciona
+        area_adscripcion_id = data.get('area_adscripcion', None)
+        if area_adscripcion_id:
+            try:
+                area_adscripcion = AreaAdscripcion.objects.get(id=area_adscripcion_id)
+                data['area_adscripcion'] = area_adscripcion.id
+            except AreaAdscripcion.DoesNotExist:
+                return Response({"error": "El área de adscripción proporcionada no es válida."}, status=status.HTTP_400_BAD_REQUEST)
 
         serializer = UserSerializer(usuario, data=data, partial=True)
 
@@ -796,7 +815,7 @@ class AportacionView(APIView):
         aportacion.delete()
         return Response({"mensaje": "Aportación eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
     
-#Enpoint GET TODAS LAS TABLAS
+#Endpoint GET TODAS LAS TABLAS
 class CurriculumVitaeView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -857,7 +876,7 @@ class CurriculumVitaeView(APIView):
 
         return paginator.get_paginated_response(paginated_data)
     
-
+#Endpoint Crear usuarios usando un archivo CSV
 class CreateUsersByCsvView(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -934,3 +953,82 @@ class CreateUsersByCsvView(APIView):
 
         except Exception as e:
             return Response({"error": f"Error al procesar el archivo CSV: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+#Endpoint para Area de Adscripcion
+class AreaAdscripcionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk=None):
+        """Devuelve las áreas de adscripción, con paginación"""
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        
+        if pk:
+            area = get_object_or_404(AreaAdscripcion, pk=pk)
+            serializer = AreaAdscripcionSerializer(area)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        areas = AreaAdscripcion.objects.all()
+        result_page = paginator.paginate_queryset(areas, request)
+        serializer = AreaAdscripcionSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+    def post(self, request):
+        """Crea una nueva área de adscripción"""
+        serializer = AreaAdscripcionSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Área de adscripción creada correctamente.", "data": serializer.data},
+                            status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, pk=None):
+        """Actualiza los datos de un área de adscripción"""
+        if not pk:
+            return Response({"error": "Se requiere un ID para actualizar el área de adscripción."}, 
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+        area = get_object_or_404(AreaAdscripcion, pk=pk)
+        serializer = AreaAdscripcionSerializer(area, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Área de adscripción actualizada correctamente.", "data": serializer.data},
+                            status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk=None):
+        """Inhabilita (marca como inactiva) un área de adscripción en lugar de eliminarla"""
+        if not pk:
+            return Response({"error": "Se requiere un ID para inhabilitar el área de adscripción."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        area = get_object_or_404(AreaAdscripcion, pk=pk)
+        area.estado = 'inactivo'
+        area.save()
+
+        return Response({"message": f"Área de adscripción marcada como inactiva correctamente."},
+                        status=status.HTTP_200_OK)
+    
+
+class HabilitarAreaAdscripcionView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def put(self, request, pk=None):
+        """Habilita un área de adscripción previamente marcada como inactiva."""
+        if not pk:
+            return Response({"error": "Se requiere un ID de área de adscripción para habilitarla."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        area = get_object_or_404(AreaAdscripcion, pk=pk)
+
+        if area.estado == 'activo':
+            return Response({"mensaje": f"El área de adscripción ya está activa."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        area.estado = 'activo'
+        area.save()
+
+        return Response({"mensaje": f"Área de adscripción habilitada correctamente."},
+                        status=status.HTTP_200_OK)
+    
+

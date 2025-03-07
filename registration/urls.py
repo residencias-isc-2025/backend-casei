@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import register, CurriculumVitaeView
-from registration.views import RegisterUserView, CustomAuthToken, ResetPasswordView, ListUsersView, UserProfileView, UserFormacionAcademicaView, InstitucionPaisView, ChangePasswordView, CapacitacionDocenteView, ActualizacionDisciplinarView, GestionAcademicaView, ProductosAcademicosRelevantesView, ExperienciaProfesionalNoAcademicaView, ExperienciaDisenoIngenierilView, LogroProfesionalView, ParticipacionView, PremioView, AportacionView, CreateUsersByCsvView, HabilitarUsuarioView, HabilitarInstitucionView
+from registration.views import RegisterUserView, CustomAuthToken, ResetPasswordView, ListUsersView, UserProfileView, UserFormacionAcademicaView, InstitucionPaisView, ChangePasswordView, CapacitacionDocenteView, ActualizacionDisciplinarView, GestionAcademicaView, ProductosAcademicosRelevantesView, ExperienciaProfesionalNoAcademicaView, ExperienciaDisenoIngenierilView, LogroProfesionalView, ParticipacionView, PremioView, AportacionView, CreateUsersByCsvView, HabilitarUsuarioView, HabilitarInstitucionView, AreaAdscripcionView, HabilitarAreaAdscripcionView
 
 urlpatterns = [
     path('register/', RegisterUserView.as_view(), name='register_user'),
@@ -40,5 +40,8 @@ urlpatterns = [
     path('habilitar-usuario/<int:pk>/', HabilitarUsuarioView.as_view(), name='habilitar_usuario'),
     path('habilitar-institucion/<int:pk>/', HabilitarInstitucionView.as_view(), name='habilitar_institucion'),
     path('reset-password/<int:pk>/', ResetPasswordView.as_view(), name='reset_password'),
-
+    path('area-adscripcion/', AreaAdscripcionView.as_view(), name='area_adscripcion'),
+    path('area-adscripcion/<int:pk>/', AreaAdscripcionView.as_view(), name='area_adscripcion_detail'),
+    path('habilitar-area-adscripcion/<int:pk>/', HabilitarAreaAdscripcionView.as_view(), name='habilitar_area_adscripcion'),
+    
 ]

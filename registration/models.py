@@ -45,7 +45,13 @@ class CustomUser(AbstractUser):
     nombre = models.CharField(max_length=100, blank=True, null=True)
     fecha_nacimiento = models.DateField(blank=True, null=True)
     tipo_docente = models.CharField(max_length=20, choices=TIPO_DOCENTE_CHOICES, null=True, blank=True)
-
+    area_adscripcion = models.ForeignKey(
+        'registration.AreaAdscripcion', 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='usuarios'
+    )
     objects = CustomUserManager()
 
     def save(self, *args, **kwargs):
@@ -59,8 +65,10 @@ class CustomUser(AbstractUser):
         else:
             self.is_staff = False
             self.is_superuser = False
-
-        self.is_active = self.estado == 'activo'
+        if self.estado == 'activo':
+            self.is_active = True
+        else:
+            self.is_active = False
 
         super().save(*args, **kwargs) 
 
@@ -215,3 +223,16 @@ class Aportacion(models.Model):
     def __str__(self):
         return f"{self.descripcion[:30]}..."
     
+class AreaAdscripcion(models.Model):
+    nombre = models.CharField(max_length=255)
+    siglas = models.CharField(max_length=20)
+
+    ESTADO_CHOICES = (
+        ('activo', 'Activo'),
+        ('inactivo', "Inactivo"),
+    )
+    estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='activo')
+
+    def __str__(self):
+        return f"{self.nombre} ({self.siglas})"
+

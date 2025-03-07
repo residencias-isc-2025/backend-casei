@@ -1,11 +1,16 @@
 from rest_framework import serializers
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDisenoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion
+from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDisenoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion, AreaAdscripcion
 
 class UserSerializer(serializers.ModelSerializer):
+    area_adscripcion = serializers.PrimaryKeyRelatedField(
+        queryset=AreaAdscripcion.objects.all(), 
+        required=False, 
+        allow_null=True
+    )
     class Meta:
         model = CustomUser
         fields = ['id', 'username', 'role', 'estado', 'apellido_materno', 'apellido_paterno', 'nombre', 
-                  'fecha_nacimiento', 'tipo_docente']
+                  'fecha_nacimiento', 'tipo_docente', 'area_adscripcion']
 
 class FormacionAcademicaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -69,4 +74,9 @@ class AportacionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Aportacion
         fields = '__all__'
+
+class AreaAdscripcionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AreaAdscripcion
+        fields = ['id', 'nombre', 'siglas', 'estado']
 
