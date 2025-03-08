@@ -818,63 +818,49 @@ class AportacionView(APIView):
 #Endpoint GET TODAS LAS TABLAS
 class CurriculumVitaeView(APIView):
     permission_classes = [IsAuthenticated]
-
+ 
     def get(self, request):
         """Devuelve todos los datos de todas las tablas registradas"""
         usuario = request.user
-        paginator = CustomPageNumberPagination()
 
         data = {
             "usuario": UserSerializer(usuario).data,
-            "formacion_academica": paginator.paginate_queryset(
-                FormacionAcademica.objects.filter(usuario=usuario), request
-            ),
-            "capacitacion_docente": paginator.paginate_queryset(
-                CapacitacionDocente.objects.filter(usuario=usuario), request
-            ),
-            "actualizacion_disciplinaria": paginator.paginate_queryset(
-                ActualizacionDisciplinaria.objects.filter(usuario=usuario), request
-            ),
-            "gestion_academica": paginator.paginate_queryset(
-                GestionAcademica.objects.filter(usuario=usuario), request
-            ),
-            "productos_academicos_relevantes": paginator.paginate_queryset(
-                ProductosAcademicosRelevantes.objects.filter(usuario=usuario), request
-            ),
-            "experiencia_no_academica": paginator.paginate_queryset(
-                ExperienciaProfesionalNoAcademica.objects.filter(usuario=usuario), request
-            ),
-            "experiencia_diseno_ingenieril": paginator.paginate_queryset(
-                ExperienciaDisenoIngenieril.objects.filter(usuario=usuario), request
-            ),
-            "logros_profesionales": paginator.paginate_queryset(
-                LogrosProfesionales.objects.filter(usuario=usuario), request
-            ),
-            "participacion": paginator.paginate_queryset(
-                Participacion.objects.filter(usuario=usuario), request
-            ),
-            "premios": paginator.paginate_queryset(
-                Premio.objects.filter(usuario=usuario), request
-            ),
-            "aportaciones": paginator.paginate_queryset(
-                Aportacion.objects.filter(usuario=usuario), request
-            ),
-        }
-        paginated_data = {
-            "formacion_academica": FormacionAcademicaSerializer(data["formacion_academica"], many=True).data,
-            "capacitacion_docente": CapacitacionDocenteSerializer(data["capacitacion_docente"], many=True).data,
-            "actualizacion_disciplinaria": ActualizacionDisciplinarSerializer(data["actualizacion_disciplinaria"], many=True).data,
-            "gestion_academica": GestionAcademicaSerializer(data["gestion_academica"], many=True).data,
-            "productos_academicos_relevantes": ProductosAcademicosRelevantesSerializer(data["productos_academicos_relevantes"], many=True).data,
-            "experiencia_no_academica": ExperienciaProfesionalNoAcademicaSerializer(data["experiencia_no_academica"], many=True).data,
-            "experiencia_diseno_ingenieril": ExperienciaDisenoIngenierilSerializer(data["experiencia_diseno_ingenieril"], many=True).data,
-            "logros_profesionales": LogrosProfesionalesSerializer(data["logros_profesionales"], many=True).data,
-            "participacion": ParticipacionSerializer(data["participacion"], many=True).data,
-            "premios": PremioSerializer(data["premios"], many=True).data,
-            "aportaciones": AportacionSerializer(data["aportaciones"], many=True).data,
+            "formacion_academica": FormacionAcademicaSerializer(
+                FormacionAcademica.objects.filter(usuario=usuario), many=True
+            ).data,
+            "capacitacion_docente": CapacitacionDocenteSerializer(
+                CapacitacionDocente.objects.filter(usuario=usuario), many=True
+            ).data,
+            "actualizacion_disciplinaria": ActualizacionDisciplinarSerializer(
+                ActualizacionDisciplinaria.objects.filter(usuario=usuario), many=True
+            ).data,
+            "gestion_academica": GestionAcademicaSerializer(
+                GestionAcademica.objects.filter(usuario=usuario), many=True
+            ).data,
+            "productos_academicos_relevantes": ProductosAcademicosRelevantesSerializer(
+                ProductosAcademicosRelevantes.objects.filter(usuario=usuario), many=True
+            ).data,
+            "experiencia_no_academica": ExperienciaProfesionalNoAcademicaSerializer(
+                ExperienciaProfesionalNoAcademica.objects.filter(usuario=usuario), many=True
+            ).data,
+            "experiencia_diseno_ingenieril": ExperienciaDisenoIngenierilSerializer(
+                ExperienciaDisenoIngenieril.objects.filter(usuario=usuario), many=True
+            ).data,
+            "logros_profesionales": LogrosProfesionalesSerializer(
+                LogrosProfesionales.objects.filter(usuario=usuario), many=True
+            ).data,
+            "participacion": ParticipacionSerializer(
+                Participacion.objects.filter(usuario=usuario), many=True
+            ).data,
+            "premios": PremioSerializer(
+                Premio.objects.filter(usuario=usuario), many=True
+            ).data,
+            "aportaciones": AportacionSerializer(
+                Aportacion.objects.filter(usuario=usuario), many=True
+            ).data,
         }
 
-        return paginator.get_paginated_response(paginated_data)
+        return Response(data, status=status.HTTP_200_OK)
     
 #Endpoint Crear usuarios usando un archivo CSV
 class CreateUsersByCsvView(APIView):
