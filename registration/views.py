@@ -220,7 +220,7 @@ class ChangePasswordView(APIView):
         usuario.password = make_password(new_password)
         usuario.save()
 
-        return Response({"mensaje": "Contrasena actualizada correctamente."}, status=status.HTTP_200_OK)
+        return Response({"mensaje": "Contraseña actualizada correctamente."}, status=status.HTTP_200_OK)
 
 #Endpoint de reseteo de contraseña
 class ResetPasswordView(APIView):
@@ -294,7 +294,7 @@ class UserFormacionAcademicaView(APIView):
         if serializer.is_valid():
             serializer.save(usuario=request.user) 
             return Response(
-                {"message": "Formación académica registrada correctamente.", "data": serializer.data},
+                {"mensaje": "Formación académica registrada correctamente.", "data": serializer.data},
                 status=status.HTTP_201_CREATED,
             )
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -311,7 +311,7 @@ class UserFormacionAcademicaView(APIView):
         serializer = FormacionAcademicaSerializer(formacion, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Información actualizada correctamente."}, status=status.HTTP_200_OK)
+            return Response({"mensaje": "Formación académica actualizada correctamente."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
 # EndPoint para la Institucion y Pais
@@ -337,7 +337,7 @@ class InstitucionPaisView(APIView):
         serializer = InstitucionPaisSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Institución registrada correctamente.", "data": serializer.data}, status=status.HTTP_201_CREATED)
+            return Response({"mensaje": "Institución registrada correctamente.", "data": serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
@@ -348,7 +348,7 @@ class InstitucionPaisView(APIView):
         serializer = InstitucionPaisSerializer(institucion, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Institución actualizada correctamente.", "data": serializer.data}, status=status.HTTP_200_OK)
+            return Response({"mensaje": "Institución actualizada correctamente.", "data": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
@@ -361,7 +361,7 @@ class InstitucionPaisView(APIView):
         institucion.estado = 'inactivo'
         institucion.save()
 
-        return Response({"message": "Institución marcada como inactiva correctamente."}, status=status.HTTP_200_OK)
+        return Response({"mensaje": "Institución marcada como inactiva correctamente."}, status=status.HTTP_200_OK)
 
 #Endpoint para Habilitar una institucion
 class HabilitarInstitucionView(APIView):
@@ -381,7 +381,6 @@ class HabilitarInstitucionView(APIView):
         institucion.save()
 
         return Response({"mensaje": f"Institución {institucion.nombre_institucion} habilitada correctamente."}, status=status.HTTP_200_OK)
-
 
 
 @login_required
@@ -415,7 +414,7 @@ class CapacitacionDocenteView(APIView):
         serializer = CapacitacionDocenteSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(usuario=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({"mensaje": "Capacitación docente registrada correctamente.", "data": serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def put(self, request, pk=None):
@@ -426,7 +425,7 @@ class CapacitacionDocenteView(APIView):
         serializer = CapacitacionDocenteSerializer(capacitacion, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"mensaje": "Capacitación docente actualizada correctamente.", "data": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def delete(self, request, pk=None):
@@ -434,7 +433,7 @@ class CapacitacionDocenteView(APIView):
             return Response({"error": "Se requiere un ID de capacitacion."}, status=status.HTTP_400_BAD_REQUEST)
         capacitacion = get_object_or_404(CapacitacionDocente, pk=pk, usuario=request.user)
         capacitacion.delete()
-        return Response({"mensaje": "Capacitacion eliminada correctamente"}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"mensaje": "Capacitacion docente eliminada correctamente"}, status=status.HTTP_200_OK)
 
 #Endpoint Actualizacion Diciplinaria
 class ActualizacionDisciplinarView(APIView):
@@ -459,7 +458,7 @@ class ActualizacionDisciplinarView(APIView):
         serializer = ActualizacionDisciplinarSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(usuario=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({"mensaje": "Actualización disciplinar registrada correctamente.", "data": serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
@@ -471,7 +470,7 @@ class ActualizacionDisciplinarView(APIView):
         serializer = ActualizacionDisciplinarSerializer(actualizacion, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({"mensaje": "Actualización disciplinar actualizada correctamente.", "data": serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
@@ -481,7 +480,7 @@ class ActualizacionDisciplinarView(APIView):
 
         actualizacion = get_object_or_404(ActualizacionDisciplinaria, pk=pk, usuario=request.user)
         actualizacion.delete()
-        return Response({"mensaje": "Actualización disciplinar eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"mensaje": "Actualización disciplinar eliminada correctamente."}, status=status.HTTP_200_OK)
     
 #Endpoint para Gestion Academica
 class GestionAcademicaView(APIView):
@@ -506,7 +505,7 @@ class GestionAcademicaView(APIView):
         serializer = GestionAcademicaSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'mensaje': 'Gestión académica guardada correctamente.','data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
@@ -514,13 +513,13 @@ class GestionAcademicaView(APIView):
         serializer = GestionAcademicaSerializer(gestion_academica, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'mensaje': 'Gestión académica actualizada correctamente.','data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
         gestion_academica = get_object_or_404(GestionAcademica, pk=pk, usuario=request.user)
         gestion_academica.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'mensaje': 'Gestión académica eliminada correctamente.'}, status=status.HTTP_200_OK)
     
 #Endpoint para Productos Academicos Relevantes
 class ProductosAcademicosRelevantesView(APIView):
@@ -540,7 +539,7 @@ class ProductosAcademicosRelevantesView(APIView):
         serializer = ProductosAcademicosRelevantesSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(usuario=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'mensaje': 'Producto académico guardado correctamente.','data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # PUT: Actualizar un producto académico existente
@@ -549,14 +548,14 @@ class ProductosAcademicosRelevantesView(APIView):
         serializer = ProductosAcademicosRelevantesSerializer(producto, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'mensaje': 'Producto académico actualizado correctamente.','data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # DELETE: Eliminar un producto académico
     def delete(self, request, pk=None):
         producto = get_object_or_404(ProductosAcademicosRelevantes, pk=pk, usuario=request.user)
         producto.delete()
-        return Response({"mensaje": "Producto académico eliminado correctamente."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"mensaje": "Producto académico eliminado correctamente."}, status=status.HTTP_200_OK)
     
 #Endpoint para Experiencia Profesional no Academica
 class ExperienciaProfesionalNoAcademicaView(APIView):
@@ -576,7 +575,7 @@ class ExperienciaProfesionalNoAcademicaView(APIView):
         serializer = ExperienciaProfesionalNoAcademicaSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(usuario=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'mensaje': 'Experiencia profesional guardada correctamente.','data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # PUT: Actualizar una experiencia profesional existente
@@ -585,14 +584,14 @@ class ExperienciaProfesionalNoAcademicaView(APIView):
         serializer = ExperienciaProfesionalNoAcademicaSerializer(experiencia, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'mensaje': 'Experiencia profesional actualizada correctamente.','data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # DELETE: Eliminar una experiencia profesional
     def delete(self, request, pk=None):
         experiencia = get_object_or_404(ExperienciaProfesionalNoAcademica, pk=pk, usuario=request.user)
         experiencia.delete()
-        return Response({"mensaje": "Experiencia profesional eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"mensaje": "Experiencia profesional eliminada correctamente."}, status=status.HTTP_200_OK)
     
 #Endpoint para Experiencia de Diseño Ingenieril
 class ExperienciaDisenoIngenierilView(APIView):
@@ -612,7 +611,7 @@ class ExperienciaDisenoIngenierilView(APIView):
         serializer = ExperienciaDisenoIngenierilSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save(usuario=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'mensaje': 'Experiencia en diseño ingenieril guardada correctamente.','data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # PUT: Actualizar una experiencia en diseño ingenieril existente
@@ -621,14 +620,14 @@ class ExperienciaDisenoIngenierilView(APIView):
         serializer = ExperienciaDisenoIngenierilSerializer(experiencia, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'mensaje': 'Experiencia en diseño ingenieril actualizada correctamente.','data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     # DELETE: Eliminar una experiencia en diseño ingenieril
     def delete(self, request, pk=None):
         experiencia = get_object_or_404(ExperienciaDisenoIngenieril, pk=pk, usuario=request.user)
         experiencia.delete()
-        return Response({"mensaje": "Experiencia en diseno ingenieril eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"mensaje": "Experiencia en diseño ingenieril eliminada correctamente."}, status=status.HTTP_200_OK)
     
 #Endpoint para Logros Profesionales (No academicos)
 class LogroProfesionalView(APIView):
@@ -650,7 +649,7 @@ class LogroProfesionalView(APIView):
         serializer = LogrosProfesionalesSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'mensaje': 'Logro profesional guardado correctamente.','data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
@@ -665,7 +664,7 @@ class LogroProfesionalView(APIView):
         serializer = LogrosProfesionalesSerializer(logro, data=data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'mensaje': 'Logro profesional actualizado correctamente.','data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
@@ -675,7 +674,7 @@ class LogroProfesionalView(APIView):
 
         logro = get_object_or_404(LogrosProfesionales, pk=pk, usuario=request.user)
         logro.delete()
-        return Response({"mensaje": "Logro profesional eliminado correctamente."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"mensaje": "Logro profesional eliminado correctamente."}, status=status.HTTP_200_OK)
     
 #Endpoint para Participacion
 class ParticipacionView(APIView):
@@ -697,7 +696,7 @@ class ParticipacionView(APIView):
         serializer = ParticipacionSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'mensaje': 'Participación guardada correctamente.','data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
@@ -706,14 +705,14 @@ class ParticipacionView(APIView):
         serializer = ParticipacionSerializer(participacion, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'mensaje': 'Participación actualizada correctamente.','data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
         """Elimina una participación existente"""
         participacion = get_object_or_404(Participacion, pk=pk, usuario=request.user)
         participacion.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response({'mensaje': 'Participación eliminada correctamente.'}, status=status.HTTP_200_OK)
 
 #Endpoint para Premio
 class PremioView(APIView):
@@ -735,7 +734,7 @@ class PremioView(APIView):
         serializer = PremioSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'mensaje': 'Premio guardado correctamente.','data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
@@ -750,7 +749,7 @@ class PremioView(APIView):
         serializer = PremioSerializer(premio, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'mensaje': 'Premio actualizado correctamente.','data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
@@ -763,7 +762,7 @@ class PremioView(APIView):
             return Response({"error": "Premio no encontrado o no tienes permiso para eliminarlo."}, status=status.HTTP_404_NOT_FOUND)
 
         premio.delete()
-        return Response({"mensaje": "Premio eliminado correctamente."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"mensaje": "Premio eliminado correctamente."}, status=status.HTTP_200_OK)
 
 #Endpoint para Aportacion
 class AportacionView(APIView):
@@ -785,7 +784,7 @@ class AportacionView(APIView):
         serializer = AportacionSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'mensaje': 'Aportación guardada correctamente.','data': serializer.data}, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
@@ -800,7 +799,7 @@ class AportacionView(APIView):
         serializer = AportacionSerializer(aportacion, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response({'mensaje': 'Aportación actualizada correctamente.','data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
@@ -813,7 +812,7 @@ class AportacionView(APIView):
             return Response({"error": "Aportación no encontrada o no tienes permiso para eliminarla."}, status=status.HTTP_404_NOT_FOUND)
 
         aportacion.delete()
-        return Response({"mensaje": "Aportación eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
+        return Response({"mensaje": "Aportación eliminada correctamente."}, status=status.HTTP_200_OK)
     
 #Endpoint GET TODAS LAS TABLAS
 class CurriculumVitaeView(APIView):
@@ -964,7 +963,7 @@ class AreaAdscripcionView(APIView):
         serializer = AreaAdscripcionSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Área de adscripción creada correctamente.", "data": serializer.data},
+            return Response({"mensaje": "Área de adscripción creada correctamente.", "data": serializer.data},
                             status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -978,7 +977,7 @@ class AreaAdscripcionView(APIView):
         serializer = AreaAdscripcionSerializer(area, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
-            return Response({"message": "Área de adscripción actualizada correctamente.", "data": serializer.data},
+            return Response({"mensaje": "Área de adscripción actualizada correctamente.", "data": serializer.data},
                             status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -992,7 +991,7 @@ class AreaAdscripcionView(APIView):
         area.estado = 'inactivo'
         area.save()
 
-        return Response({"message": f"Área de adscripción marcada como inactiva correctamente."},
+        return Response({"mensaje": f"Área de adscripción marcada como inactiva correctamente."},
                         status=status.HTTP_200_OK)
     
 
