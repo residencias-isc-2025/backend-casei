@@ -266,6 +266,8 @@ class ListUsersView(ListAPIView):
         search_username = self.request.query_params.get('username', None)
         search_name = self.request.query_params.get('nombre', None)
         search_area_adscripcion = self.request.query_params.get('area_adscripcion', None)
+        search_estado = self.request.query_params.get('estado', None)
+
 
         # Aplicar filtros condicionalmente
         if search_username:
@@ -279,7 +281,8 @@ class ListUsersView(ListAPIView):
                 queryset = queryset.filter(area_adscripcion__id=area_adscripcion_id)
             except ValueError:
                 pass
-        
+        if search_estado:
+            queryset = queryset.filter(estado__exact=search_estado)
         result_page = paginator.paginate_queryset(queryset, self.request)
         return result_page
     
