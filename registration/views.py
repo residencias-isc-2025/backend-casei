@@ -320,7 +320,7 @@ class UserFormacionAcademicaView(APIView):
         try:
             formacion = FormacionAcademica.objects.get(id=pk, usuario=request.user)
             formacion.delete()
-            return Response({"mensaje": "Formación académica eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
+            return Response({"mensaje": "Formación académica eliminada correctamente."}, status=status.HTTP_200_OK)
         except FormacionAcademica.DoesNotExist:
             return Response({"error": "No tienes permiso para eliminar este registro o no existe."}, status=status.HTTP_403_FORBIDDEN)
     
