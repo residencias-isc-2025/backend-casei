@@ -261,7 +261,8 @@ class ListUsersView(ListAPIView):
         paginator = PageNumberPagination()
         paginator.page_size = 10
         if self.request.user.is_staff:
-            return CustomUser.objects.exclude(id=self.request.user.id)
+            # Ordenar de menor a mayor por ID
+            return CustomUser.objects.exclude(id=self.request.user.id).order_by('username')
         return CustomUser.objects.none()
     
 # Endpoint de jalar la informacion del usuario autenticado
