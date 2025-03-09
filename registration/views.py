@@ -313,6 +313,16 @@ class UserFormacionAcademicaView(APIView):
             serializer.save()
             return Response({"mensaje": "Formación académica actualizada correctamente."}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    def delete(self, request, pk=None):
+        if not pk:
+            return Response({"error": "Se requiere un ID de formación académica."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            formacion = FormacionAcademica.objects.get(id=pk, usuario=request.user)
+            formacion.delete()
+            return Response({"mensaje": "Formación académica eliminada correctamente."}, status=status.HTTP_204_NO_CONTENT)
+        except FormacionAcademica.DoesNotExist:
+            return Response({"error": "No tienes permiso para eliminar este registro o no existe."}, status=status.HTTP_403_FORBIDDEN)
     
 # EndPoint para la Institucion y Pais
 class InstitucionPaisView(APIView):

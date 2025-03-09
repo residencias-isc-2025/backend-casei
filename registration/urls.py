@@ -9,6 +9,7 @@ urlpatterns = [
     path('users/', ListUsersView.as_view(), name='list_users'),
     path('profile/', UserProfileView.as_view(), name='user_profile'),
     path('formacion-academica/', UserFormacionAcademicaView.as_view(), name='user_formacion_academica'),
+    path('formacion-academica/<int:pk>/', UserFormacionAcademicaView.as_view(), name='user_formacion_academica'),
     path('institucion-pais/', InstitucionPaisView.as_view(), name='institucion_pais'),
     path('institucion-pais/<int:pk>/', InstitucionPaisView.as_view(), name='institucion_pais_detail'),
     path('register/<int:pk>/', RegisterUserView.as_view(), name='register_user_detail'),  # Para PUT y DELETE
