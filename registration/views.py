@@ -12,6 +12,7 @@ from registration.models import CustomUser, FormacionAcademica, InstitucionPais,
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
+from django.db.models import Q
 
 
 def es_admin_o_superusuario(user):
@@ -254,16 +255,33 @@ class ResetPasswordView(APIView):
 # Endpoint de listado
 class ListUsersView(ListAPIView):
     permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
-    queryset = CustomUser.objects.all()
     serializer_class = UserSerializer
 
     def get_queryset(self):
         paginator = PageNumberPagination()
         paginator.page_size = 10
-        if self.request.user.is_staff:
-            # Ordenar de menor a mayor por ID
-            return CustomUser.objects.exclude(id=self.request.user.id).order_by('username')
-        return CustomUser.objects.none()
+        queryset = CustomUser.objects.exclude(id=self.request.user.id).order_by('username')
+
+        # Obtener parámetros de búsqueda desde la URL
+        search_username = self.request.query_params.get('username', None)
+        search_name = self.request.query_params.get('nombre', None)
+        search_area_adscripcion = self.request.query_params.get('area_adscripcion', None)
+
+        # Aplicar filtros condicionalmente
+        if search_username:
+            queryset = queryset.filter(username__startswith=search_username)
+        if search_name:
+            queryset = queryset.filter(nombre__startswith=search_name)
+        if search_area_adscripcion:
+            try:
+                # Intentar convertir el ID del área de adscripción a un número entero
+                area_adscripcion_id = int(search_area_adscripcion)
+                queryset = queryset.filter(area_adscripcion__id=area_adscripcion_id)
+            except ValueError:
+                pass
+        
+        result_page = paginator.paginate_queryset(queryset, self.request)
+        return result_page
     
 # Endpoint de jalar la informacion del usuario autenticado
 class UserProfileView(APIView):
