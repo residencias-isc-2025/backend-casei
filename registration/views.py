@@ -298,11 +298,10 @@ class UserProfileView(APIView):
 class UserFormacionAcademicaView(APIView):
     
     permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
-
     def get(self, request):
         paginator = PageNumberPagination()
         paginator.page_size = 10
-        formacion = FormacionAcademica.objects.filter(usuario=request.user)
+        formacion = FormacionAcademica.objects.filter(usuario=request.user).order_by('anio_obtencion')
         result_page = paginator.paginate_queryset(formacion, request)
         serializer = FormacionAcademicaSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
@@ -354,6 +353,10 @@ class InstitucionPaisView(APIView):
         """Devuelve la lista de todas las instituciones o una en específico si se pasa un ID."""
         paginator = PageNumberPagination()
         paginator.page_size = 10
+
+        # Construir el queryset con filtros dinámicos
+        instituciones = InstitucionPais.objects.all().order_by('nombre_institucion')
+
         
         if pk:
             institucion = get_object_or_404(InstitucionPais, pk=pk)
@@ -365,15 +368,13 @@ class InstitucionPaisView(APIView):
         search_pais = request.query_params.get('pais', None)
         search_estado = request.query_params.get('estado', None)
 
-        # Construir el queryset con filtros dinámicos
-        instituciones = InstitucionPais.objects.all().order_by('nombre_institucion')
-
+        
         if search_institucion:
-            instituciones = instituciones.filter(nombre_institucion__startswith=search_institucion)
+            instituciones = instituciones.filter(nombre_institucion__icontains=search_institucion)
         if search_pais:
-            instituciones = instituciones.filter(pais__exact=search_pais)
+            instituciones = instituciones.filter(pais__iexact=search_pais)
         if search_estado:
-            instituciones = instituciones.filter(estado__exact=search_estado)
+            instituciones = instituciones.filter(estado__iexact=search_estado)
 
         # Aplicar paginación al queryset filtrado
         result_page = paginator.paginate_queryset(instituciones, request)
@@ -453,7 +454,7 @@ class CapacitacionDocenteView(APIView):
     def get(self, request):
         paginator = PageNumberPagination()
         paginator.page_size = 10
-        capacitaciones = CapacitacionDocente.objects.filter(usuario=request.user)
+        capacitaciones = CapacitacionDocente.objects.filter(usuario=request.user).order_by('anio_obtencion')
         result_page = paginator.paginate_queryset(capacitaciones, request)
         serializer = CapacitacionDocenteSerializer(result_page, many=True)      
         return paginator.get_paginated_response(serializer.data)
@@ -496,7 +497,7 @@ class ActualizacionDisciplinarView(APIView):
             serializer = ActualizacionDisciplinarSerializer(actualizacion)
             return Response(serializer.data)
         
-        actualizaciones = ActualizacionDisciplinaria.objects.filter(usuario=request.user)
+        actualizaciones = ActualizacionDisciplinaria.objects.filter(usuario=request.user).order_by('anio_obtencion')
         result_page = paginator.paginate_queryset(actualizaciones, request)
         serializer = ActualizacionDisciplinarSerializer(result_page, many=True)        
         return paginator.get_paginated_response(serializer.data)
@@ -540,7 +541,7 @@ class GestionAcademicaView(APIView):
             serializer = GestionAcademicaSerializer(gestion_academica)
             return Response(serializer.data, status=status.HTTP_200_OK)
         
-        gestion_academica = GestionAcademica.objects.filter(usuario=request.user)
+        gestion_academica = GestionAcademica.objects.filter(usuario=request.user).order_by('d_mes_anio')
         paginator = PageNumberPagination()
         paginator.page_size = 10  # Número de elementos por página
         resultado_paginado = paginator.paginate_queryset(gestion_academica, request)
@@ -611,7 +612,7 @@ class ExperienciaProfesionalNoAcademicaView(APIView):
 
     # GET: Listar todas las experiencias del usuario autenticado
     def get(self, request):
-        experiencias = ExperienciaProfesionalNoAcademica.objects.filter(usuario=request.user)
+        experiencias = ExperienciaProfesionalNoAcademica.objects.filter(usuario=request.user).order_by('d_mes_anio')
         paginator = PageNumberPagination()
         paginator.page_size = 10  # Número de elementos por página
         resultado_paginado = paginator.paginate_queryset(experiencias, request)
