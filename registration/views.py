@@ -979,13 +979,25 @@ class AreaAdscripcionView(APIView):
         """Devuelve las áreas de adscripción, con paginación"""
         paginator = PageNumberPagination()
         paginator.page_size = 10
+        queryset = CustomUser.objects.exclude(id=self.request.user.id).order_by('nombre')
         
         if pk:
             area = get_object_or_404(AreaAdscripcion, pk=pk)
             serializer = AreaAdscripcionSerializer(area)
             return Response(serializer.data, status=status.HTTP_200_OK)
-        
+        search_nombre = request.query_params.get('nombre', None)
+        search_siglas = request.query_params.get('siglas', None)
+        search_estado = request.query_params.get('estado', None)
+
         areas = AreaAdscripcion.objects.all()
+
+        if search_nombre:
+            areas = areas.filter(nombre__startswith=search_nombre)
+        if search_siglas:
+            areas = areas.filter(siglas__exact=search_siglas)
+        if search_estado:
+            areas = areas.filter(estado__exact=search_estado)
+
         result_page = paginator.paginate_queryset(areas, request)
         serializer = AreaAdscripcionSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
