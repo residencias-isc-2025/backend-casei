@@ -354,15 +354,31 @@ class InstitucionPaisView(APIView):
         """Devuelve la lista de todas las instituciones o una en específico si se pasa un ID."""
         paginator = PageNumberPagination()
         paginator.page_size = 10
+        
         if pk:
             institucion = get_object_or_404(InstitucionPais, pk=pk)
             serializer = InstitucionPaisSerializer(institucion)
-            return Response(serializer.data)
-        else:
-            instituciones = InstitucionPais.objects.all()
-            result_page = paginator.paginate_queryset(instituciones, request)
-            serializer = InstitucionPaisSerializer(result_page, many=True)
-            return paginator.get_paginated_response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # Obtener parámetros de búsqueda desde la URL
+        search_institucion = request.query_params.get('institucion', None)
+        search_pais = request.query_params.get('pais', None)
+        search_estado = request.query_params.get('estado', None)
+
+        # Construir el queryset con filtros dinámicos
+        instituciones = InstitucionPais.objects.all().order_by('nombre_institucion')
+
+        if search_institucion:
+            instituciones = instituciones.filter(nombre_institucion__startswith=search_institucion)
+        if search_pais:
+            instituciones = instituciones.filter(pais__exact=search_pais)
+        if search_estado:
+            instituciones = instituciones.filter(estado__exact=search_estado)
+
+        # Aplicar paginación al queryset filtrado
+        result_page = paginator.paginate_queryset(instituciones, request)
+        serializer = InstitucionPaisSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         """Permite registrar una nueva institución y país."""
