@@ -353,15 +353,14 @@ class InstitucionPaisView(APIView):
         """Devuelve la lista de todas las instituciones o una en específico si se pasa un ID."""
         paginator = PageNumberPagination()
         paginator.page_size = 10
-
-        # Construir el queryset con filtros dinámicos
-        instituciones = InstitucionPais.objects.all().order_by('nombre_institucion')
-
         
         if pk:
             institucion = get_object_or_404(InstitucionPais, pk=pk)
             serializer = InstitucionPaisSerializer(institucion)
             return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        # Construir el queryset con filtros dinámicos
+        instituciones = InstitucionPais.objects.all().order_by('nombre_institucion')
 
         # Obtener parámetros de búsqueda desde la URL
         search_institucion = request.query_params.get('institucion', None)
@@ -874,37 +873,37 @@ class CurriculumVitaeView(APIView):
         data = {
             "usuario": UserSerializer(usuario).data,
             "formacion_academica": FormacionAcademicaSerializer(
-                FormacionAcademica.objects.filter(usuario=usuario), many=True
+                FormacionAcademica.objects.filter(usuario=usuario).order_by('-anio_obtencion'), many=True
             ).data,
             "capacitacion_docente": CapacitacionDocenteSerializer(
-                CapacitacionDocente.objects.filter(usuario=usuario), many=True
+                CapacitacionDocente.objects.filter(usuario=usuario).order_by('-anio_obtencion'), many=True
             ).data,
             "actualizacion_disciplinaria": ActualizacionDisciplinarSerializer(
-                ActualizacionDisciplinaria.objects.filter(usuario=usuario), many=True
+                ActualizacionDisciplinaria.objects.filter(usuario=usuario).order_by('-anio_obtencion'), many=True
             ).data,
             "gestion_academica": GestionAcademicaSerializer(
-                GestionAcademica.objects.filter(usuario=usuario), many=True
+                GestionAcademica.objects.filter(usuario=usuario).order_by('-a_mes_anio'), many=True
             ).data,
             "productos_academicos_relevantes": ProductosAcademicosRelevantesSerializer(
-                ProductosAcademicosRelevantes.objects.filter(usuario=usuario), many=True
+                ProductosAcademicosRelevantes.objects.filter(usuario=usuario).order_by('-id'), many=True
             ).data,
             "experiencia_no_academica": ExperienciaProfesionalNoAcademicaSerializer(
-                ExperienciaProfesionalNoAcademica.objects.filter(usuario=usuario), many=True
+                ExperienciaProfesionalNoAcademica.objects.filter(usuario=usuario).order_by('-a_mes_anio'), many=True
             ).data,
             "experiencia_diseno_ingenieril": ExperienciaDisenoIngenierilSerializer(
-                ExperienciaDisenoIngenieril.objects.filter(usuario=usuario), many=True
+                ExperienciaDisenoIngenieril.objects.filter(usuario=usuario).order_by('-periodo'), many=True
             ).data,
             "logros_profesionales": LogrosProfesionalesSerializer(
-                LogrosProfesionales.objects.filter(usuario=usuario), many=True
+                LogrosProfesionales.objects.filter(usuario=usuario).order_by('-id'), many=True
             ).data,
             "participacion": ParticipacionSerializer(
-                Participacion.objects.filter(usuario=usuario), many=True
+                Participacion.objects.filter(usuario=usuario).order_by('-periodo'), many=True
             ).data,
             "premios": PremioSerializer(
-                Premio.objects.filter(usuario=usuario), many=True
+                Premio.objects.filter(usuario=usuario).order_by('-id'), many=True
             ).data,
             "aportaciones": AportacionSerializer(
-                Aportacion.objects.filter(usuario=usuario), many=True
+                Aportacion.objects.filter(usuario=usuario).order_by('-id'), many=True
             ).data,
         }
 
@@ -996,7 +995,6 @@ class AreaAdscripcionView(APIView):
         """Devuelve las áreas de adscripción, con paginación"""
         paginator = PageNumberPagination()
         paginator.page_size = 10
-        queryset = CustomUser.objects.exclude(id=self.request.user.id).order_by('nombre')
         
         if pk:
             area = get_object_or_404(AreaAdscripcion, pk=pk)
@@ -1006,14 +1004,14 @@ class AreaAdscripcionView(APIView):
         search_siglas = request.query_params.get('siglas', None)
         search_estado = request.query_params.get('estado', None)
 
-        areas = AreaAdscripcion.objects.all()
+        areas = AreaAdscripcion.objects.all().order_by('nombre')
 
         if search_nombre:
-            areas = areas.filter(nombre__startswith=search_nombre)
+            areas = areas.filter(nombre__icontains=search_nombre)
         if search_siglas:
-            areas = areas.filter(siglas__exact=search_siglas)
+            areas = areas.filter(siglas__iexact=search_siglas)
         if search_estado:
-            areas = areas.filter(estado__exact=search_estado)
+            areas = areas.filter(estado__iexact=search_estado)
 
         result_page = paginator.paginate_queryset(areas, request)
         serializer = AreaAdscripcionSerializer(result_page, many=True)
