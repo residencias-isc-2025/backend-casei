@@ -352,8 +352,14 @@ class InstitucionPaisView(APIView):
     def get(self, request, pk=None):
         """Devuelve la lista de todas las instituciones o una en específico si se pasa un ID."""
         paginator = PageNumberPagination()
-        paginator.page_size = 10
         
+        # Permitir que el usuario defina el tamaño de la página desde los parámetros de consulta
+        page_size = request.query_params.get('page_size', 10)  # Valor predeterminado de 10
+        try:
+            paginator.page_size = int(page_size)
+        except ValueError:
+            paginator.page_size = 10  # Valor predeterminado si el parámetro no es un número válido
+
         if pk:
             institucion = get_object_or_404(InstitucionPais, pk=pk)
             serializer = InstitucionPaisSerializer(institucion)
@@ -367,7 +373,7 @@ class InstitucionPaisView(APIView):
         search_pais = request.query_params.get('pais', None)
         search_estado = request.query_params.get('estado', None)
 
-        
+        # Aplicar filtros condicionales
         if search_institucion:
             instituciones = instituciones.filter(nombre_institucion__icontains=search_institucion)
         if search_pais:
@@ -992,20 +998,30 @@ class AreaAdscripcionView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk=None):
-        """Devuelve las áreas de adscripción, con paginación"""
+        """Devuelve las áreas de adscripción, con paginación y tamaño de página dinámico"""
         paginator = PageNumberPagination()
-        paginator.page_size = 10
         
+        # Permitir que el usuario defina el tamaño de la página desde los parámetros de consulta
+        page_size = request.query_params.get('page_size', 10)  # Valor predeterminado de 10
+        try:
+            paginator.page_size = int(page_size)
+        except ValueError:
+            paginator.page_size = 10  # Valor predeterminado si el parámetro no es un número válido
+
         if pk:
             area = get_object_or_404(AreaAdscripcion, pk=pk)
             serializer = AreaAdscripcionSerializer(area)
             return Response(serializer.data, status=status.HTTP_200_OK)
+
+        # Parámetros de búsqueda
         search_nombre = request.query_params.get('nombre', None)
         search_siglas = request.query_params.get('siglas', None)
         search_estado = request.query_params.get('estado', None)
 
+        # Consulta base
         areas = AreaAdscripcion.objects.all().order_by('nombre')
 
+        # Aplicar filtros condicionales
         if search_nombre:
             areas = areas.filter(nombre__icontains=search_nombre)
         if search_siglas:
@@ -1013,6 +1029,7 @@ class AreaAdscripcionView(APIView):
         if search_estado:
             areas = areas.filter(estado__iexact=search_estado)
 
+        # Paginación
         result_page = paginator.paginate_queryset(areas, request)
         serializer = AreaAdscripcionSerializer(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
