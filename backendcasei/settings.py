@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'registration',
+    'usuarios',
+    'institucion',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -43,7 +45,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
 ]
-AUTH_USER_MODEL = 'registration.CustomUser'
+AUTH_USER_MODEL = 'usuarios.CustomUser'
 
 
 MIDDLEWARE = [

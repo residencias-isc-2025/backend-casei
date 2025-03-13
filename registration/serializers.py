@@ -1,6 +1,8 @@
 from rest_framework import serializers
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDisenoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion, AreaAdscripcion
-
+from registration.models import  FormacionAcademica, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDisenoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion, AreaAdscripcion
+from usuarios.models import CustomUser
+from institucion.models import InstitucionPais
+"""
 class UserSerializer(serializers.ModelSerializer):
     area_adscripcion = serializers.PrimaryKeyRelatedField(
         queryset=AreaAdscripcion.objects.all(), 
@@ -11,22 +13,23 @@ class UserSerializer(serializers.ModelSerializer):
         model = CustomUser
         fields = ['id', 'username', 'role', 'estado', 'apellido_materno', 'apellido_paterno', 'nombre', 
                   'fecha_nacimiento', 'tipo_docente', 'area_adscripcion']
-
+"""
 class FormacionAcademicaSerializer(serializers.ModelSerializer):
     class Meta:
         model = FormacionAcademica
         fields = ['id', 'nivel', 'nombre', 'institucion_pais', 'anio_obtencion', 'cedula_profesional']
-
+""""
 class InstitucionPaisSerializer(serializers.ModelSerializer):
     class Meta:
         model = InstitucionPais
         fields = ['id', 'nombre_institucion', 'pais', 'estado']
-        
+    """    
+"""
 class CapacitacionDocenteSerializer(serializers.ModelSerializer):
     class Meta:
         model = CapacitacionDocente
         fields = ['id', 'tipo_capacitacion', 'institucion_pais', 'anio_obtencion', 'horas']
-
+"""
 class ActualizacionDisciplinarSerializer(serializers.ModelSerializer):
     class Meta:
         model = ActualizacionDisciplinaria

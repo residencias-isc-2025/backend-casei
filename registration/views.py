@@ -7,8 +7,10 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
-from registration.serializers import UserSerializer, FormacionAcademicaSerializer, InstitucionPaisSerializer, CapacitacionDocenteSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer, ProductosAcademicosRelevantesSerializer, ExperienciaProfesionalNoAcademicaSerializer, ExperienciaDisenoIngenierilSerializer, LogrosProfesionalesSerializer, ParticipacionSerializer, PremioSerializer, AportacionSerializer, AreaAdscripcionSerializer
-from registration.models import CustomUser, FormacionAcademica, InstitucionPais, CapacitacionDocente, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDisenoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion, AreaAdscripcion
+from registration.serializers import FormacionAcademicaSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer, ProductosAcademicosRelevantesSerializer, ExperienciaProfesionalNoAcademicaSerializer, ExperienciaDisenoIngenierilSerializer, LogrosProfesionalesSerializer, ParticipacionSerializer, PremioSerializer, AportacionSerializer, AreaAdscripcionSerializer
+from registration.models import CustomUser, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDisenoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion, AreaAdscripcion
+from usuarios.serializers import UserSerializer
+from institucion.views import InstitucionPais
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -346,11 +348,11 @@ class UserFormacionAcademicaView(APIView):
             return Response({"error": "No tienes permiso para eliminar este registro o no existe."}, status=status.HTTP_403_FORBIDDEN)
     
 # EndPoint para la Institucion y Pais
+"""
 class InstitucionPaisView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, pk=None):
-        """Devuelve la lista de todas las instituciones o una en específico si se pasa un ID."""
         paginator = PageNumberPagination()
         
         # Permitir que el usuario defina el tamaño de la página desde los parámetros de consulta
@@ -387,7 +389,6 @@ class InstitucionPaisView(APIView):
         return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
-        """Permite registrar una nueva institución y país."""
         serializer = InstitucionPaisSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -395,7 +396,6 @@ class InstitucionPaisView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
-        """Permite actualizar los datos de una institución."""
         if not pk:
             return Response({"error": "Se requiere un ID para actualizar una institución."}, status=status.HTTP_400_BAD_REQUEST)
         institucion = get_object_or_404(InstitucionPais, pk=pk)
@@ -406,7 +406,6 @@ class InstitucionPaisView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
-        """Inhabilita (marca como inactiva) una institución en lugar de eliminarla."""
         if not pk:
             return Response({"error": "Se requiere un ID para inhabilitar una institución."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -416,13 +415,14 @@ class InstitucionPaisView(APIView):
         institucion.save()
 
         return Response({"mensaje": "Institución marcada como inactiva correctamente."}, status=status.HTTP_200_OK)
-
+"""
 #Endpoint para Habilitar una institucion
+"""
 class HabilitarInstitucionView(APIView):
     permission_classes = [IsAuthenticated]
 
     def put(self, request, pk=None):
-        """Habilita una institución previamente marcada como inactiva."""
+        
         if not pk:
             return Response({"error": "Se requiere un ID de institución para habilitarla."}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -436,7 +436,7 @@ class HabilitarInstitucionView(APIView):
 
         return Response({"mensaje": f"Institución {institucion.nombre_institucion} habilitada correctamente."}, status=status.HTTP_200_OK)
 
-
+"""
 @login_required
 def dashboard(request):
     if request.user.role == "admin":

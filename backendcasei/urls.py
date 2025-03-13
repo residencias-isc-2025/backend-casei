@@ -21,8 +21,14 @@ from backendcasei.views import login_view
 
 urlpatterns = [
     path('', include('core.urls')),
+
+    # URLS importantes 
     path('admin/', admin.site.urls),
     path('registration/', include('registration.urls')),
+    path('usuarios/', include('usuarios.urls')),
+    path('institucion/', include('institucion.urls')),
+
+
     # Paths de Auth
     path('accounts/', include('django.contrib.auth.urls')),
     

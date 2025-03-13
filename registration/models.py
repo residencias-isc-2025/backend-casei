@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.conf import settings
+from usuarios.models import CustomUser
+from institucion.models import InstitucionPais
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, password=None, role='user', **extra_fields):
@@ -20,7 +22,7 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('estado', 'activo')
 
         return self.create_user(username, password, **extra_fields)
-
+"""
 class CustomUser(AbstractUser):
     ROLE_CHOICES = (
         ('admin', 'Administrador'),
@@ -55,7 +57,7 @@ class CustomUser(AbstractUser):
     objects = CustomUserManager()
 
     def save(self, *args, **kwargs):
-        """Otorga privilegios de staff a los superusuarios automáticamente"""
+
         if self.role == 'superuser': 
             self.is_staff = True
             self.is_superuser = True
@@ -74,8 +76,9 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.get_role_display()}) - {self.get_estado_display()}"
-
+"""
 # Tabla Formacion Academica
+
 class FormacionAcademica(models.Model):
     NIVEL_CHOICES = [
         ('L', 'Licenciatura'),
@@ -88,7 +91,7 @@ class FormacionAcademica(models.Model):
     nivel = models.CharField(max_length=1, choices=NIVEL_CHOICES)  # Solo valores L, E, M, D
     nombre = models.CharField(max_length=255)
     institucion_pais = models.ForeignKey(
-        'registration.InstitucionPais',  # Corregido para evitar importación circular
+        InstitucionPais,  # Corregido para evitar importación circular
         on_delete=models.CASCADE,
         related_name='formaciones_academicas',
         null=True,
@@ -101,19 +104,6 @@ class FormacionAcademica(models.Model):
         return f"{self.usuario.username} - {self.get_nivel_display()}"
     
 # Institucion y Pais\
-
-class InstitucionPais(models.Model):
-    ESTADO_CHOICES = (
-        ('activo', 'Activo'),
-        ('inactivo', 'Inactivo')
-    )
-    
-    nombre_institucion = models.CharField(max_length=255)
-    pais = models.CharField(max_length=100)
-    estado = models.CharField(max_length=10, choices=ESTADO_CHOICES, default='activo')
-
-    def ___str___(self):
-        return f"{self.nombre_institucion} - {self.pais} ({self.get_estado_display()})"
 
 # Capacitacion Docente
 
@@ -138,7 +128,7 @@ class CapacitacionDocente(models.Model):
 class ActualizacionDisciplinaria(models.Model):
     tipo_actualizacion = models.CharField(max_length=255)
     institucion_pais = models.ForeignKey(
-        'registration.InstitucionPais', 
+        InstitucionPais, 
         on_delete=models.CASCADE, 
         related_name='actualizaciones_disciplinarias',
         null=True, 
@@ -154,7 +144,7 @@ class ActualizacionDisciplinaria(models.Model):
 class GestionAcademica(models.Model):
     actividad_puesto = models.CharField(max_length=255)
     institucion_pais = models.ForeignKey(
-        'registration.InstitucionPais', 
+        InstitucionPais, 
         on_delete=models.CASCADE, 
         related_name='gestion_academica',
         null=True, 

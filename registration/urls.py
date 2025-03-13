@@ -1,9 +1,10 @@
 from django.urls import path
-from .views import register, CurriculumVitaeView
-from registration.views import RegisterUserView, CustomAuthToken, ResetPasswordView, ListUsersView, UserProfileView, UserFormacionAcademicaView, InstitucionPaisView, ChangePasswordView, CapacitacionDocenteView, ActualizacionDisciplinarView, GestionAcademicaView, ProductosAcademicosRelevantesView, ExperienciaProfesionalNoAcademicaView, ExperienciaDisenoIngenierilView, LogroProfesionalView, ParticipacionView, PremioView, AportacionView, CreateUsersByCsvView, HabilitarUsuarioView, HabilitarInstitucionView, AreaAdscripcionView, HabilitarAreaAdscripcionView
+from .views import CurriculumVitaeView
+from registration.views import RegisterUserView, CustomAuthToken, ResetPasswordView, ListUsersView, UserProfileView, UserFormacionAcademicaView, ChangePasswordView, CapacitacionDocenteView, ActualizacionDisciplinarView, GestionAcademicaView, ProductosAcademicosRelevantesView, ExperienciaProfesionalNoAcademicaView, ExperienciaDisenoIngenierilView, LogroProfesionalView, ParticipacionView, PremioView, AportacionView, CreateUsersByCsvView, HabilitarUsuarioView, AreaAdscripcionView, HabilitarAreaAdscripcionView
 
 urlpatterns = [
     # Usuarios
+
     path('register/', RegisterUserView.as_view(), name='register_user'),
     path('register/<int:pk>/', RegisterUserView.as_view(), name='register_user_detail'),
     path('change-password/', ChangePasswordView.as_view(), name='change_password'),
@@ -15,9 +16,10 @@ urlpatterns = [
     path('habilitar-usuario/<int:pk>/', HabilitarUsuarioView.as_view(), name='habilitar_usuario'),
     
     # Institucion
-    path('institucion-pais/', InstitucionPaisView.as_view(), name='institucion_pais'),
-    path('institucion-pais/<int:pk>/', InstitucionPaisView.as_view(), name='institucion_pais_detail'),
-    path('habilitar-institucion/<int:pk>/', HabilitarInstitucionView.as_view(), name='habilitar_institucion'),
+    
+    #path('institucion-pais/', InstitucionPaisView.as_view(), name='institucion_pais'),
+    #path('institucion-pais/<int:pk>/', InstitucionPaisView.as_view(), name='institucion_pais_detail'),
+    #path('habilitar-institucion/<int:pk>/', HabilitarInstitucionView.as_view(), name='habilitar_institucion'),
     
     # Adscripcion
     path('area-adscripcion/', AreaAdscripcionView.as_view(), name='area_adscripcion'),
