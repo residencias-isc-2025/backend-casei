@@ -1,6 +1,7 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.conf import settings
+from adscripcion.models import AreaAdscripcion
 
 # Create your models here.
 class CustomUserManager(BaseUserManager):
@@ -47,7 +48,7 @@ class CustomUser(AbstractUser):
     fecha_nacimiento = models.DateField(blank=True, null=True)
     tipo_docente = models.CharField(max_length=20, choices=TIPO_DOCENTE_CHOICES, null=True, blank=True)
     area_adscripcion = models.ForeignKey(
-        'registration.AreaAdscripcion', 
+        AreaAdscripcion, 
         on_delete=models.SET_NULL, 
         null=True, 
         blank=True, 

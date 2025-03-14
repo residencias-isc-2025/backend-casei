@@ -39,11 +39,11 @@ Si se instala una nuneva librería esta debe ser agregada en el archivo
 requirements.txt
 ```
 
-1. URL para el endpoint de Registrar: http://127.0.0.1:8000/registration/register/
+1. URL para el endpoint de Registrar: http://127.0.0.1:8000/usuarios/register/
 2. URL para el endpoint de generar el token de autorizacion: http://127.0.0.1:8000/api/token/
-3. URL para el endpoint de reset-password: http://127.0.0.1:8000/registration/reset-password/
-4. URL para el endpoint de listado de usuarios: http://127.0.0.1:8000/registration/users/
-5. URL para el endpoint de informacion del usuario autenticado: http://127.0.0.1:8000/registration/profile/
+3. URL para el endpoint de reset-password: http://127.0.0.1:8000/usuarios/reset-password/
+4. URL para el endpoint de listado de usuarios: http://127.0.0.1:8000/usuarios/users/
+5. URL para el endpoint de informacion del usuario autenticado: http://127.0.0.1:8000/usuarios/profile/
 6. URL para el endpoint de Formacion Academica: http://127.0.0.1:8000/registration/formacion-academica/
 7. URL para el endpoint de Institucion y Pais: http://127.0.0.1:8000/registration/institucion-pais/
 8. URL para el ednpoint de Cambio de Contraseña: http://127.0.0.1:8000/registration/change-password/

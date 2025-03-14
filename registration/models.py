@@ -3,6 +3,7 @@ from django.db import models
 from django.conf import settings
 from usuarios.models import CustomUser
 from institucion.models import InstitucionPais
+from adscripcion.models import AreaAdscripcion
 
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, password=None, role='user', **extra_fields):
@@ -212,7 +213,8 @@ class Aportacion(models.Model):
 
     def __str__(self):
         return f"{self.descripcion[:30]}..."
-    
+
+"""   
 class AreaAdscripcion(models.Model):
     nombre = models.CharField(max_length=255)
     siglas = models.CharField(max_length=20)
@@ -225,4 +227,6 @@ class AreaAdscripcion(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.siglas})"
+
+"""
 

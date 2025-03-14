@@ -14,5 +14,4 @@ class InstitucionPais(models.Model):
 
     def ___str___(self):
         return f"{self.nombre_institucion} - {self.pais} ({self.get_estado_display()})"
-    
-    
+        
