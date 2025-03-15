@@ -21,32 +21,30 @@ from backendcasei.views import login_view
 
 urlpatterns = [
     path('', include('core.urls')),
-
-    # URLS importantes 
     path('admin/', admin.site.urls),
-    path('registration/', include('registration.urls')),
-    path('usuarios/', include('usuarios.urls')),
-    path('institucion/', include('institucion.urls')),
-    path('adscripcion/', include('adscripcion.urls')),
-    path('formacion_academica/', include('formacion_academica.urls')),
-    path('capacitacion_docente/', include('capacitacion_docente.urls')),
-    path('actualizacion_diciplinar/', include('actualizacion_diciplinar.urls')),
-    path('gestion_academica/', include('gestion_academica.urls')),
-    path('productos_academicos/', include('productos_academicos.urls')),
-    path('experiencia_profesional/', include('experiencia_profesional.urls')),
-    path('experiencia_diseno/', include('experiencia_diseno.urls')),
-    path('logros_profesionales/', include('logros_profesionales.urls')),
-    path('participacion/', include('participacion.urls')),
-    path('premios/', include('premios.urls')),
-    path('aportaciones/', include('aportaciones.urls')),
-    path('reportes/', include('reportes.urls')),
+    path('api/registration/', include('registration.urls')),
 
     # Paths de Auth
     path('accounts/', include('django.contrib.auth.urls')),
     
     path('api/login/', login_view),
-    path('api/registration/', include('registration.urls')),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # URLS importantes 
+    path('api/usuarios/', include('usuarios.urls')),
+    path('api/institucion/', include('institucion.urls')),
+    path('api/adscripcion/', include('adscripcion.urls')),
+    path('api/formacion_academica/', include('formacion_academica.urls')),
+    path('api/capacitacion_docente/', include('capacitacion_docente.urls')),
+    path('api/actualizacion_diciplinar/', include('actualizacion_diciplinar.urls')),
+    path('api/gestion_academica/', include('gestion_academica.urls')),
+    path('api/productos_academicos/', include('productos_academicos.urls')),
+    path('api/experiencia_profesional/', include('experiencia_profesional.urls')),
+    path('api/experiencia_diseno/', include('experiencia_diseno.urls')),
+    path('api/logros_profesionales/', include('logros_profesionales.urls')),
+    path('api/participacion/', include('participacion.urls')),
+    path('api/premios/', include('premios.urls')),
+    path('api/aportaciones/', include('aportaciones.urls')),
+    path('api/reportes/', include('reportes.urls')),
     
 ]
