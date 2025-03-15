@@ -33,6 +33,13 @@ urlpatterns = [
     path('actualizacion_diciplinar/', include('actualizacion_diciplinar.urls')),
     path('gestion_academica/', include('gestion_academica.urls')),
     path('productos_academicos/', include('productos_academicos.urls')),
+    path('experiencia_profesional/', include('experiencia_profesional.urls')),
+    path('experiencia_diseno/', include('experiencia_diseno.urls')),
+    path('logros_profesionales/', include('logros_profesionales.urls')),
+    path('participacion/', include('participacion.urls')),
+    path('premios/', include('premios.urls')),
+    path('aportaciones/', include('aportaciones.urls')),
+    path('reportes/', include('reportes.urls')),
 
     # Paths de Auth
     path('accounts/', include('django.contrib.auth.urls')),
