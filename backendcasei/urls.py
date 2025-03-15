@@ -28,6 +28,11 @@ urlpatterns = [
     path('usuarios/', include('usuarios.urls')),
     path('institucion/', include('institucion.urls')),
     path('adscripcion/', include('adscripcion.urls')),
+    path('formacion_academica/', include('formacion_academica.urls')),
+    path('capacitacion_docente/', include('capacitacion_docente.urls')),
+    path('actualizacion_diciplinar/', include('actualizacion_diciplinar.urls')),
+    path('gestion_academica/', include('gestion_academica.urls')),
+    path('productos_academicos/', include('productos_academicos.urls')),
 
     # Paths de Auth
     path('accounts/', include('django.contrib.auth.urls')),

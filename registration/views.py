@@ -7,8 +7,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
-from registration.serializers import FormacionAcademicaSerializer, ActualizacionDisciplinarSerializer, GestionAcademicaSerializer, ProductosAcademicosRelevantesSerializer, ExperienciaProfesionalNoAcademicaSerializer, ExperienciaDisenoIngenierilSerializer, LogrosProfesionalesSerializer, ParticipacionSerializer, PremioSerializer, AportacionSerializer
-from registration.models import CustomUser, ActualizacionDisciplinaria, GestionAcademica, ProductosAcademicosRelevantes, ExperienciaProfesionalNoAcademica, ExperienciaDisenoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion
+from registration.serializers import ExperienciaProfesionalNoAcademicaSerializer, ExperienciaDisenoIngenierilSerializer, LogrosProfesionalesSerializer, ParticipacionSerializer, PremioSerializer, AportacionSerializer
+from registration.models import CustomUser, ExperienciaProfesionalNoAcademica, ExperienciaDisenoIngenieril, LogrosProfesionales, Participacion, Premio, Aportacion
 from usuarios.serializers import UserSerializer
 from institucion.views import InstitucionPais
 from django.shortcuts import render, redirect, get_object_or_404
@@ -297,56 +297,7 @@ class UserProfileView(APIView):
         return Response(serializer.data)
 
 # Endpoint para la Formacion Academica
-class UserFormacionAcademicaView(APIView):
-    
-    permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
-    def get(self, request):
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
-        formacion = FormacionAcademica.objects.filter(usuario=request.user).order_by('anio_obtencion')
-        result_page = paginator.paginate_queryset(formacion, request)
-        serializer = FormacionAcademicaSerializer(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
-    
-    def post(self, request):
-        
-        data = request.data.copy()  
-        data["usuario"] = request.user.id
 
-        serializer = FormacionAcademicaSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save(usuario=request.user) 
-            return Response(
-                {"mensaje": "Formación académica registrada correctamente.", "data": serializer.data},
-                status=status.HTTP_201_CREATED,
-            )
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request):
-        
-        formacion_id = request.data.get("id")
-
-        try:
-            formacion = FormacionAcademica.objects.get(id=formacion_id, usuario=request.user)
-        except FormacionAcademica.DoesNotExist:
-            return Response({"error": "No tienes permiso para modificar este registro."}, status=status.HTTP_403_FORBIDDEN)
-
-        serializer = FormacionAcademicaSerializer(formacion, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"mensaje": "Formación académica actualizada correctamente."}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    def delete(self, request, pk=None):
-        if not pk:
-            return Response({"error": "Se requiere un ID de formación académica."}, status=status.HTTP_400_BAD_REQUEST)
-
-        try:
-            formacion = FormacionAcademica.objects.get(id=pk, usuario=request.user)
-            formacion.delete()
-            return Response({"mensaje": "Formación académica eliminada correctamente."}, status=status.HTTP_200_OK)
-        except FormacionAcademica.DoesNotExist:
-            return Response({"error": "No tienes permiso para eliminar este registro o no existe."}, status=status.HTTP_403_FORBIDDEN)
-    
 # EndPoint para la Institucion y Pais
 """
 class InstitucionPaisView(APIView):
@@ -453,163 +404,12 @@ def dashboard(request):
         return render(request, 'dashboard.html', {'mensaje': mensaje})
 
 #Endpoint Capacitacion Docente
-class CapacitacionDocenteView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
-        capacitaciones = CapacitacionDocente.objects.filter(usuario=request.user).order_by('anio_obtencion')
-        result_page = paginator.paginate_queryset(capacitaciones, request)
-        serializer = CapacitacionDocenteSerializer(result_page, many=True)      
-        return paginator.get_paginated_response(serializer.data)
-    
-    def post(self, request):
-        serializer = CapacitacionDocenteSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(usuario=request.user)
-            return Response({"mensaje": "Capacitación docente registrada correctamente.", "data": serializer.data}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def put(self, request, pk=None):
-        if not pk:
-            return Response({"error": "Se requiere un ID de capacitacion."}, status=status.HTTP_400_BAD_REQUEST)
-        
-        capacitacion = get_object_or_404(CapacitacionDocente, pk=pk, usuario=request.user)
-        serializer = CapacitacionDocenteSerializer(capacitacion, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"mensaje": "Capacitación docente actualizada correctamente.", "data": serializer.data}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    def delete(self, request, pk=None):
-        if not pk:
-            return Response({"error": "Se requiere un ID de capacitacion."}, status=status.HTTP_400_BAD_REQUEST)
-        capacitacion = get_object_or_404(CapacitacionDocente, pk=pk, usuario=request.user)
-        capacitacion.delete()
-        return Response({"mensaje": "Capacitacion docente eliminada correctamente"}, status=status.HTTP_200_OK)
 
 #Endpoint Actualizacion Diciplinaria
-class ActualizacionDisciplinarView(APIView):
-    permission_classes = [IsAuthenticated]
 
-    def get(self, request, pk=None):
-        """Devuelve las actualizaciones disciplinarias del usuario autenticado"""
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
-        if pk:
-            actualizacion = get_object_or_404(ActualizacionDisciplinaria, pk=pk, usuario=request.user)
-            serializer = ActualizacionDisciplinarSerializer(actualizacion)
-            return Response(serializer.data)
-        
-        actualizaciones = ActualizacionDisciplinaria.objects.filter(usuario=request.user).order_by('anio_obtencion')
-        result_page = paginator.paginate_queryset(actualizaciones, request)
-        serializer = ActualizacionDisciplinarSerializer(result_page, many=True)        
-        return paginator.get_paginated_response(serializer.data)
-
-    def post(self, request):
-        """Crea una nueva actualización disciplinar para el usuario autenticado"""
-        serializer = ActualizacionDisciplinarSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(usuario=request.user)
-            return Response({"mensaje": "Actualización disciplinar registrada correctamente.", "data": serializer.data}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, pk=None):
-        """Actualiza una actualización disciplinar existente del usuario autenticado"""
-        if not pk:
-            return Response({"error": "Se requiere un ID de actualización disciplinar."}, status=status.HTTP_400_BAD_REQUEST)
-
-        actualizacion = get_object_or_404(ActualizacionDisciplinaria, pk=pk, usuario=request.user)
-        serializer = ActualizacionDisciplinarSerializer(actualizacion, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"mensaje": "Actualización disciplinar actualizada correctamente.", "data": serializer.data}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk=None):
-        """Elimina una actualización disciplinar existente del usuario autenticado"""
-        if not pk:
-            return Response({"error": "Se requiere un ID de actualización disciplinar."}, status=status.HTTP_400_BAD_REQUEST)
-
-        actualizacion = get_object_or_404(ActualizacionDisciplinaria, pk=pk, usuario=request.user)
-        actualizacion.delete()
-        return Response({"mensaje": "Actualización disciplinar eliminada correctamente."}, status=status.HTTP_200_OK)
-    
 #Endpoint para Gestion Academica
-class GestionAcademicaView(APIView):
-    permission_classes = [IsAuthenticated]
 
-    def get(self, request, pk=None):
-        if pk:
-            gestion_academica = get_object_or_404(GestionAcademica, pk=pk, usuario=request.user)
-            serializer = GestionAcademicaSerializer(gestion_academica)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        
-        gestion_academica = GestionAcademica.objects.filter(usuario=request.user).order_by('d_mes_anio')
-        paginator = PageNumberPagination()
-        paginator.page_size = 10  # Número de elementos por página
-        resultado_paginado = paginator.paginate_queryset(gestion_academica, request)
-        serializer = GestionAcademicaSerializer(resultado_paginado, many=True)
-        return paginator.get_paginated_response(serializer.data)
-
-    def post(self, request):
-        data = request.data.copy()
-        data['usuario'] = request.user.id
-        serializer = GestionAcademicaSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'mensaje': 'Gestión académica guardada correctamente.','data': serializer.data}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def put(self, request, pk=None):
-        gestion_academica = get_object_or_404(GestionAcademica, pk=pk, usuario=request.user)
-        serializer = GestionAcademicaSerializer(gestion_academica, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'mensaje': 'Gestión académica actualizada correctamente.','data': serializer.data}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, pk=None):
-        gestion_academica = get_object_or_404(GestionAcademica, pk=pk, usuario=request.user)
-        gestion_academica.delete()
-        return Response({'mensaje': 'Gestión académica eliminada correctamente.'}, status=status.HTTP_200_OK)
-    
 #Endpoint para Productos Academicos Relevantes
-class ProductosAcademicosRelevantesView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    # GET: Listar todos los productos académicos del usuario autenticado
-    def get(self, request):
-        productos = ProductosAcademicosRelevantes.objects.filter(usuario=request.user)
-        paginator = PageNumberPagination()
-        paginator.page_size = 10  # Número de elementos por página
-        resultado_paginado = paginator.paginate_queryset(productos, request)
-        serializer = ProductosAcademicosRelevantesSerializer(resultado_paginado, many=True)
-        return paginator.get_paginated_response(serializer.data)
-
-    # POST: Crear un nuevo producto académico
-    def post(self, request):
-        serializer = ProductosAcademicosRelevantesSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save(usuario=request.user)
-            return Response({'mensaje': 'Producto académico guardado correctamente.','data': serializer.data}, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # PUT: Actualizar un producto académico existente
-    def put(self, request, pk=None):
-        producto = get_object_or_404(ProductosAcademicosRelevantes, pk=pk, usuario=request.user)
-        serializer = ProductosAcademicosRelevantesSerializer(producto, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'mensaje': 'Producto académico actualizado correctamente.','data': serializer.data}, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    # DELETE: Eliminar un producto académico
-    def delete(self, request, pk=None):
-        producto = get_object_or_404(ProductosAcademicosRelevantes, pk=pk, usuario=request.user)
-        producto.delete()
-        return Response({"mensaje": "Producto académico eliminado correctamente."}, status=status.HTTP_200_OK)
     
 #Endpoint para Experiencia Profesional no Academica
 class ExperienciaProfesionalNoAcademicaView(APIView):

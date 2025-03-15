@@ -80,90 +80,18 @@ class CustomUser(AbstractUser):
 """
 # Tabla Formacion Academica
 
-class FormacionAcademica(models.Model):
-    NIVEL_CHOICES = [
-        ('L', 'Licenciatura'),
-        ('E', 'Especialidad'),
-        ('M', 'Maestría'),
-        ('D', 'Doctorado'),
-    ]
-
-    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="formacion_academica")
-    nivel = models.CharField(max_length=1, choices=NIVEL_CHOICES)  # Solo valores L, E, M, D
-    nombre = models.CharField(max_length=255)
-    institucion_pais = models.ForeignKey(
-        InstitucionPais,  # Corregido para evitar importación circular
-        on_delete=models.CASCADE,
-        related_name='formaciones_academicas',
-        null=True,
-        blank=True
-    )
-    anio_obtencion = models.IntegerField()
-    cedula_profesional = models.CharField(max_length=100, unique=True)
-
-    def __str__(self):
-        return f"{self.usuario.username} - {self.get_nivel_display()}"
     
 # Institucion y Pais\
 
 # Capacitacion Docente
 
-class CapacitacionDocente(models.Model):
-    tipo_capacitacion = models.CharField(max_length=255)
-    institucion_pais = models.ForeignKey(
-        InstitucionPais, 
-        on_delete=models.CASCADE, 
-        related_name='capacitaciones',
-        null=True, 
-        blank=True
-    )
-    anio_obtencion = models.PositiveIntegerField()
-    horas = models.PositiveIntegerField()
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='capacitaciones_docentes')
-
-    def ___str___(self):
-        return f"{self.tipo_capacitacion} - {self.usuario.username}"
     
 # Actualizacion Diciplinaria
 
-class ActualizacionDisciplinaria(models.Model):
-    tipo_actualizacion = models.CharField(max_length=255)
-    institucion_pais = models.ForeignKey(
-        InstitucionPais, 
-        on_delete=models.CASCADE, 
-        related_name='actualizaciones_disciplinarias',
-        null=True, 
-        blank=True
-    )
-    anio_obtencion = models.PositiveIntegerField()
-    horas = models.PositiveIntegerField()
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='actualizacion_disciplinar')
 
-    def __str__(self):
-        return f"{self.tipo_actualizacion} - {self.usuario.username}"
-    
-class GestionAcademica(models.Model):
-    actividad_puesto = models.CharField(max_length=255)
-    institucion_pais = models.ForeignKey(
-        InstitucionPais, 
-        on_delete=models.CASCADE, 
-        related_name='gestion_academica',
-        null=True, 
-        blank=True
-    )
-    d_mes_anio = models.DateField()
-    a_mes_anio = models.DateField()
-    usuario = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
-    def __str__(self):
-        return f"{self.actividad_puesto} en {self.institucion_pais}"
 
-class ProductosAcademicosRelevantes(models.Model):
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    descripcion_producto_academico = models.TextField()
 
-    def __str__(self):
-        return f"{self.usuario.username} - Producto Académico"
 
 class ExperienciaProfesionalNoAcademica(models.Model):
     usuario = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
