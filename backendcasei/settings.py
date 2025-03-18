@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'reportes',
     'periodo',
     'objetivos_especificos',
+    'criterio_desempeno',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',

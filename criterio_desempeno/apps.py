@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class MateriaConfig(AppConfig):
+class CriterioDesempenoConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'materia'
+    name = 'criterio_desempeno'
