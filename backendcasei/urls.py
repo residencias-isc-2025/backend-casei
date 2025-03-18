@@ -46,6 +46,6 @@ urlpatterns = [
     path('api/premios/', include('premios.urls')),
     path('api/aportaciones/', include('aportaciones.urls')),
     path('api/reportes/', include('reportes.urls')),
-    path('api/periodos/', include('periodo.urls'))
-    
+    path('api/periodos/', include('periodo.urls')),
+    path('api/objetivos_especificos/', include('objetivos_especificos.urls'))
 ]
