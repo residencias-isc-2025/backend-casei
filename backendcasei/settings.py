@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'objetivos_especificos',
     'criterio_desempeno',
     'materia',
+    'atributo_egreso',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
