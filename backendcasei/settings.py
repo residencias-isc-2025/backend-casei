@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'criterio_desempeno',
     'estrategia_ensenanza',
     'estrategia_evaluacion',
+    'practica',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
