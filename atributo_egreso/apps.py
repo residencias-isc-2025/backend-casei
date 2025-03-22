@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class MateriaConfig(AppConfig):
+class AtributoEgresoConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'materia'
+    name = 'atributo_egreso'
