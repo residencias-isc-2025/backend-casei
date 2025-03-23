@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'estrategia_ensenanza',
     'estrategia_evaluacion',
     'practica',
+    'bibliografia',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',

@@ -52,5 +52,6 @@ urlpatterns = [
     path('api/criterio_desempeno/', include('criterio_desempeno.urls')),
     path('api/estrategia_ensenanza/', include('estrategia_ensenanza.urls')),
     path('api/estrategia_evaluacion/', include('estrategia_evaluacion.urls')),
-    path('api/practica/', include('practica.urls'))
+    path('api/practica/', include('practica.urls')),
+    path('api/bibliografia/', include('bibliografia.urls'))
 ]
