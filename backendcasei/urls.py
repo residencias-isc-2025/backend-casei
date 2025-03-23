@@ -53,5 +53,6 @@ urlpatterns = [
     path('api/estrategia_ensenanza/', include('estrategia_ensenanza.urls')),
     path('api/estrategia_evaluacion/', include('estrategia_evaluacion.urls')),
     path('api/practica/', include('practica.urls')),
-    path('api/bibliografia/', include('bibliografia.urls'))
+    path('api/bibliografia/', include('bibliografia.urls')),
+    path('api/temas/', include('temas.urls'))
 ]
