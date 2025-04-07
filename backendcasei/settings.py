@@ -56,6 +56,7 @@ INSTALLED_APPS = [
     'practica',
     'bibliografia',
     'actividad_aprendizaje',
+    'competencias_genericas',
     'temas',
     'corsheaders',
     'django.contrib.admin',
