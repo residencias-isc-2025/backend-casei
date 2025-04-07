@@ -58,4 +58,5 @@ urlpatterns = [
     path('api/actividad_aprendizaje/', include('actividad_aprendizaje.urls')),
     path('api/competencias_genericas/', include('competencias_genericas.urls')),
     path('api/indicador_alcance/', include('indicador_alcance.urls')),
+    path('api/nivel_desempenio/', include('nivel_desempenio.urls')),
 ]

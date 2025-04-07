@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'actividad_aprendizaje',
     'competencias_genericas',
     'indicador_alcance',
+    'nivel_desempenio',
     'temas',
     'corsheaders',
     'django.contrib.admin',
