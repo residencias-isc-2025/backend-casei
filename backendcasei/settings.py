@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'indicador_alcance',
     'nivel_desempenio',
     'lista_cotejo',
+    'sub_temas',
     'temas',
     'corsheaders',
     'django.contrib.admin',
