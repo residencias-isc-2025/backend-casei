@@ -56,5 +56,6 @@ urlpatterns = [
     path('api/bibliografia/', include('bibliografia.urls')),
     path('api/temas/', include('temas.urls')),
     path('api/actividad_aprendizaje/', include('actividad_aprendizaje.urls')),
-    path('api/competencias_genericas/', include('competencias_genericas.urls'))
+    path('api/competencias_genericas/', include('competencias_genericas.urls')),
+    path('api/indicador_alcance/', include('indicador_alcance.urls')),
 ]
