@@ -4,5 +4,5 @@ from bibliografia.models import Bibliografia
 class BibliografiaSerializers(serializers.ModelSerializer):
     class Meta:
         model = Bibliografia
-        fields = '__all__'
+        fields = ['id', 'isssn', 'nombre', 'ieee', 'anio', 'autor', 'tipo']
 

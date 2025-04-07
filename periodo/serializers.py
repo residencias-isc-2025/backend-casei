@@ -4,4 +4,4 @@ from periodo.models import Periodo
 class PeriodoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Periodo
-        fields = ['id', 'descripcion','clave','fecha_inicio','fecha_fin','activo']
+        fields = ['id', 'descripcion', 'fecha_inicio', 'fecha_fin', 'activo']
