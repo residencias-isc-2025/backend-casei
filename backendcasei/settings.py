@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'competencias_genericas',
     'indicador_alcance',
     'nivel_desempenio',
+    'lista_cotejo',
     'temas',
     'corsheaders',
     'django.contrib.admin',
@@ -188,3 +189,6 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     # Puedes agregar más configuraciones según tus necesidades
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'

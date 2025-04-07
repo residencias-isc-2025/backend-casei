@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from backendcasei.views import login_view
 
@@ -59,4 +61,5 @@ urlpatterns = [
     path('api/competencias_genericas/', include('competencias_genericas.urls')),
     path('api/indicador_alcance/', include('indicador_alcance.urls')),
     path('api/nivel_desempenio/', include('nivel_desempenio.urls')),
-]
+    path('api/lista_cotejo/', include('lista_cotejo.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
