@@ -65,4 +65,5 @@ urlpatterns = [
     path('api/sub_temas/', include('sub_temas.urls')),
     path('api/competencia/', include('competencia.urls')),
     path('api/materias/', include('materias.urls')),
+    path('api/carrera/', include('carrera.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
