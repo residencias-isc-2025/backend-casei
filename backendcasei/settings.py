@@ -71,6 +71,8 @@ INSTALLED_APPS = [
     'perfil_ingreso',
     'perfil_egreso',
     'donde_trabaja',
+    'actividad',
+    'calificaciones',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
