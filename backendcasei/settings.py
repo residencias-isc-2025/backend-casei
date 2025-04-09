@@ -67,6 +67,7 @@ INSTALLED_APPS = [
     'carrera',
     'alumno',
     'clase',
+    'objetivos_educacionales',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
