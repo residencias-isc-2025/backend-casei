@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'sub_temas',
     'temas',
     'competencia',
+    'materias',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
