@@ -62,6 +62,7 @@ INSTALLED_APPS = [
     'lista_cotejo',
     'sub_temas',
     'temas',
+    'competencia',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',

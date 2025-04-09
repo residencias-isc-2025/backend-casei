@@ -63,4 +63,5 @@ urlpatterns = [
     path('api/nivel_desempenio/', include('nivel_desempenio.urls')),
     path('api/lista_cotejo/', include('lista_cotejo.urls')),
     path('api/sub_temas/', include('sub_temas.urls')),
+    path('api/competencia/', include('competencia.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
