@@ -1,0 +1,161 @@
+1. Objetivos_especificos
+*Descripción
+
+2. Atributo_egreso
+*siglas
+*Descripción
+
+3. Criterio_desempeno (añadir nivel)
+*atributo de egreso (id)
+*nivel
+*Descripción
+#### No va ##### *Indicadores        Ids de los indicadores
+
+4. Estrategia de enseñanza
+*descripción
+
+5. Estrategia de evaluación
+*descripcion
+
+6. Practica
+*siglas
+*nombre
+*descripcion
+
+7. Bibliografía
+*ISSSN
+*nombre
+*IEEE
+*año
+-ficha_bibtex
+
+8. Temas
+*nombre
+*objetivo
+*Criterio de desempeño (Opcional) (id)
+*estrategia de enseñanza (id)
+*estrategia de evaluación (id)
+*practica (id)
+*sub-temas (id), (List)
+
+8.5. sub-temas
+* Descripción
+* Actividad de aprendizaje (id)List
+* Estrategias de enseñanza (id), (List)
+* Competencias Genéricas (id), (List)
+* Horas
+* Indicadores de alcance (id), (List)
+* Nivel de desempeño(id)(List)
+* Lista de cotejo (id)
+
+Lista de cotejo
+*nombre
+*Actividad (PDF)
+
+Actividad de aprendizaje
+* Descripción
+
+Cedula 4.2.2
+Cedula 2.1.1
+Cedula 5.1.1
+Cedula Instrumentación
+
+
+--------------------------------------
+9. Competencia
+*objetivos específicos (id)
+*temas (id)
+
+Competencias Genericas
+* Descripción
+
+Indicadores de alcance
+*Sigla (A-B-C)
+*Descripción
+*Valor Porcentaje 0-100 %0
+
+Nivel de desempeño
+*Nombre
+*Indicadores de alcance (id)(List)
+*Valor (0-100)
+
+Matriz de evaluación
+*
+
+10. Materia:
+*Clave (Única)
+*Nombre
+*competencia (añadir) (id)
+*Creditos_requeridos        0
+*Materias_requeridas        IDS de materias
+*Semestre
+*Tipo_curso            Obligatorio|Optativo
+*Creditos_teoria
+*Creditos_practica
+*Horas_ciencias_basicas
+*Horas_ciencias_ingenieria
+*Horas_ingenieria_aplicada
+*Horas_diseno_ingeniril
+*Horas_ciencias_sociales
+*Horas_ciencias_economicas
+*Horas_otros_cursos        (LA SUMA DE Creditos_teoria + Creditos_practica = (Horas_ciencias_basicas + Horas_ciencias_ingenieria + Horas_ingenieria_aplicada + Horas_diseno_ingeniril + Horas_ciencias_sociales + Horas_ciencias_economicas + Horas_otros_cursos)
+*Objetivo_general
+*Indicador_descripción
+*Idcriterio_desempeno (id)
+*bibliografías (id)
+
+
+11. Carrera
+*Nombre
+*IdAdscripcion (id)
+*IdObjetivoEspecifico (id)
+*Atributos_egreso    Ids de los atributos
+
+12. Objetivos_educacionales
+*Descripción
+*IdCarrera (id)
+
+13. Donde_trabaja
+*Descripción
+*IdCarrera (id)
+
+14. Perfil_ingreso
+*Descripción
+*IdCarrera (id)
+
+15. Perfil_egreso
+*Descripción
+*IdCarrera (id)
+
+16. Clase
+*Grupo             (01-02-03)
+*IdMateria (id)
+*IdCarrera (id)
+*IdPeriodo (id)
+
+17. Alumno (Que se pueda en csv)
+*Matricula
+*Nombre
+*Apellido_paterno
+*Apellido_materno
+*IdCarrera (id)
+
+18. Actividad
+*Descripción            (PDF)
+*Formato            (PDF)
+*IdsCalificaciones        Ids calificación opcional
+*IdAlumnoAlto
+*CalificacionAlumnoAlto
+*EvidenciaAlumnoAlto        (PDF)
+*IdAlumnoPromedio
+*CalificacionAlumnoPromedio
+*EvidenciaAlumnoPromedio    (PDF)
+*IdAlumnoBajo
+*CalificacionAlumnoBajo
+*EvidenciaAlumnoBajo        (PDF)
+
+19. Calificaciones
+*IdAlumno
+*IdClase
+*IdActividad
+*Calificación

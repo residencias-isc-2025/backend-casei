@@ -1,0 +1,51 @@
+BACKEND
+
+Que características tiene el numero de nomina?
+Los primeros 2 dígitos es el año
+los siguientes 2 dígitos es el mes
+Los siguientes 2 dígitos son el numero de maestro
+
+Que características tiene el CIP?
+
+-que el usuario pueda cambiar la contraseña
+    para cambiar la contraseña ponga la vieja y luego la nueva en la sección del perfil
+
+1.- Hacer el jwt en django (Json web token)
+
+2.-Tipos de usuario (user-level)
+    (super)    Súper usuario
+    (admin) Administrador
+    (user)     Docente    (Basificado/Asignatura) -> user-type
+
+3.-Sección de usuarios
+    -El administrador puede resetear la contraseña del usuario.
+
+4.-Sección de perfil 
+        Cédula 0 (TODA)
+        apellidos M y P
+        Nombres
+        la edad se calcula con la fecha de nacimiento
+        El nombramiento que tiene, podemos hacerlo en una tabla de db aparte.
+        La antigüedad se calcula con el año y mes que entro.
+    
+        La formación académica estará apararte como un sub-menú
+        Nombre de la especialidad
+        Institución 
+        Año de obtención
+        Cedula profesional.
+        Capacitación docente y Actualización disciplinaria en tablas diferentes.
+
+        Gestión académica (Como ha estado subiendo de puesto el usuario.    
+
+        Productos académicos (Que fue lo que hice, pero se dividirá en que hizo y en que año.)
+        Experiencia profesional no académica
+
+
+5.-El sistema permitirá consultar información de usuarios, proporcionando filtros para la búsqueda (por área de adscripción, nombre, nómina, estatus)
+
+6.-CSV leerlo y guardarlo en db
+
+FRONTEND
+
+-Color mas tenue(oscuro) y mas grande la letra.
+-Agregar una opción llamada formatos debe haber una opción para descargar.

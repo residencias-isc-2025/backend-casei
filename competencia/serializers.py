@@ -4,7 +4,7 @@ from competencia.models import Competencia
 class CompetenciaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Competencia
-        fields = ['id', 'objetivos_especificos', 'temas']
+        fields = ['id', 'descripcion', 'objetivos_especificos', 'temas']
 
 
         
