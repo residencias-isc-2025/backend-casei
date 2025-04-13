@@ -10,7 +10,12 @@ from django.shortcuts import get_object_or_404
 class MateriaView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, pk=None):
+        if pk:
+            materia = get_object_or_404(Materia, pk=pk)
+            serializer = MateriaSerializer(materia)
+            return Response(serializer.data)
+        
         materias = Materia.objects.all().order_by('-id')
         paginator = PageNumberPagination()
         paginator.page_size = 10
