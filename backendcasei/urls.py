@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from django.conf import settings
+from django.conf.urls.static import static
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from backendcasei.views import login_view
 
@@ -48,8 +50,28 @@ urlpatterns = [
     path('api/reportes/', include('reportes.urls')),
     path('api/periodos/', include('periodo.urls')),
     path('api/objetivos_especificos/', include('objetivos_especificos.urls')),
-    path('api/criterio_desempeno/', include('criterio_desempeno.urls')),
-    path('api/materia/', include('materia.urls')),
     path('api/atributo_egreso/', include('atributo_egreso.urls')),
-    path('api/carrera/', include('carrera.urls'))
-]
+    path('api/criterio_desempeno/', include('criterio_desempeno.urls')),
+    path('api/estrategia_ensenanza/', include('estrategia_ensenanza.urls')),
+    path('api/estrategia_evaluacion/', include('estrategia_evaluacion.urls')),
+    path('api/practica/', include('practica.urls')),
+    path('api/bibliografia/', include('bibliografia.urls')),
+    path('api/temas/', include('temas.urls')),
+    path('api/actividad_aprendizaje/', include('actividad_aprendizaje.urls')),
+    path('api/competencias_genericas/', include('competencias_genericas.urls')),
+    path('api/indicador_alcance/', include('indicador_alcance.urls')),
+    path('api/nivel_desempenio/', include('nivel_desempenio.urls')),
+    path('api/lista_cotejo/', include('lista_cotejo.urls')),
+    path('api/sub_temas/', include('sub_temas.urls')),
+    path('api/competencia/', include('competencia.urls')),
+    path('api/materias/', include('materias.urls')),
+    path('api/carrera/', include('carrera.urls')),
+    path('api/alumno/', include('alumno.urls')),
+    path('api/clase/', include('clase.urls')),
+    path('api/objetivos_educacionales/', include('objetivos_educacionales.urls')),
+    path('api/perfil_ingreso/', include('perfil_ingreso.urls')),
+    path('api/perfil_egreso/', include('perfil_egreso.urls')),
+    path('api/donde_trabaja/', include('donde_trabaja.urls')),
+    path('api/actividad/', include('actividad.urls')),
+    path('api/calificaciones/', include('calificaciones.urls')),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

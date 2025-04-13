@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
-
+import os
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -49,10 +49,30 @@ INSTALLED_APPS = [
     'reportes',
     'periodo',
     'objetivos_especificos',
-    'criterio_desempeno',
-    'materia',
     'atributo_egreso',
+    'criterio_desempeno',
+    'estrategia_ensenanza',
+    'estrategia_evaluacion',
+    'practica',
+    'bibliografia',
+    'actividad_aprendizaje',
+    'competencias_genericas',
+    'indicador_alcance',
+    'nivel_desempenio',
+    'lista_cotejo',
+    'sub_temas',
+    'temas',
+    'competencia',
+    'materias',
     'carrera',
+    'alumno',
+    'clase',
+    'objetivos_educacionales',
+    'perfil_ingreso',
+    'perfil_egreso',
+    'donde_trabaja',
+    'actividad',
+    'calificaciones',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -181,3 +201,6 @@ SIMPLE_JWT = {
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     # Puedes agregar más configuraciones según tus necesidades
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
