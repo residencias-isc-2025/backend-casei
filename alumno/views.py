@@ -46,3 +46,8 @@ class AlumnoView(APIView):
         alumno.is_active = False
         alumno.save()
         return Response({'mensaje': 'Alumno desactivado correctamente.'}, status=status.HTTP_200_OK)
+    
+class AlumnoCountView(APIView):
+    def get(self, request):
+        total = Alumno.objects.count()
+        return Response({'total_alumnos': total}, status=status.HTTP_200_OK)
