@@ -12,6 +12,9 @@ class ClaseView(APIView):
 
     def get(self, request):
         clases = Clase.objects.all().order_by('-id')
+        periodo_id = request.query_params.get('periodo')
+        if periodo_id:
+            clases = clases.filter(periodo_id=periodo_id)
         paginator = PageNumberPagination()
         paginator.page_size = 10
         resultado_paginado = paginator.paginate_queryset(clases, request)
