@@ -2,6 +2,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.parsers import MultiPartParser, FormParser
 from lista_cotejo.models import ListaCotejo
 from lista_cotejo.serializers import ListaCotejoSerializer
@@ -12,9 +13,12 @@ class ListaCotejoView(APIView):
     parser_classes = [MultiPartParser, FormParser]
 
     def get(self, request):
-        listas = ListaCotejo.objects.all().order_by('-id')
-        serializer = ListaCotejoSerializer(listas, many=True)
-        return Response(serializer.data)
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        queryset = ListaCotejo.objects.all().order_by('-id')
+        result_page = paginator.paginate_queryset(queryset, request)
+        serializer = ListaCotejoSerializer(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
         serializer = ListaCotejoSerializer(data=request.data)
