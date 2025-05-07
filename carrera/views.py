@@ -10,7 +10,12 @@ from django.shortcuts import get_object_or_404
 class CarreraView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, pk=None):
+        if pk:
+            carrera = get_object_or_404(Carrera, pk=pk)
+            serializer = CarreraSerializer(carrera)
+            return Response(serializer.data)
+        
         carreras = Carrera.objects.all().order_by('-id')
         paginator = PageNumberPagination()
         paginator.page_size = 10
