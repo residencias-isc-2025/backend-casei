@@ -11,11 +11,11 @@ class Clase(models.Model):
         ('03', 'Grupo 03'),
     ]
 
-    grupo = models.CharField(max_length=2, choices=GRUPO_CHOICES)
-    materia = models.ForeignKey(Materia, on_delete=models.CASCADE, related_name='clases')
-    carrera = models.ForeignKey(Carrera, on_delete=models.CASCADE, related_name='clases')
-    periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE, related_name='clases')
-    alumnos = models.ManyToManyField(Alumno, related_name='clases')
+    grupo = models.CharField(max_length=2, choices=GRUPO_CHOICES, null=True, blank=True)
+    materia = models.ForeignKey(Materia, on_delete=models.CASCADE, related_name='clases', null=True, blank=True)
+    carrera = models.ForeignKey(Carrera, on_delete=models.CASCADE, related_name='clases', null=True, blank=True)
+    periodo = models.ForeignKey(Periodo, on_delete=models.CASCADE, related_name='clases', null=True, blank=True)
+    alumnos = models.ManyToManyField(Alumno, related_name='clases', blank=True)
 
     def __str__(self):
         return f"{self.materia.nombre} - Grupo {self.grupo} - {self.periodo}"
