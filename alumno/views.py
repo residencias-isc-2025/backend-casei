@@ -11,7 +11,7 @@ class AlumnoView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        alumnos = Alumno.objects.all().order_by('-id')
+        alumnos = Alumno.objects.filter(is_active=True).order_by('-id')  # ✅ solo activos
         paginator = PageNumberPagination()
         paginator.page_size = 10
         resultado_paginado = paginator.paginate_queryset(alumnos, request)
@@ -28,16 +28,21 @@ class AlumnoView(APIView):
     def put(self, request, pk=None):
         if not pk:
             return Response({'error': 'Se requiere el ID.'}, status=status.HTTP_400_BAD_REQUEST)
-        alumno = get_object_or_404(Alumno, pk=pk)
+
+        alumno = get_object_or_404(Alumno, pk=pk, is_active=True) 
         serializer = AlumnoSerializer(alumno, data=request.data, partial=True)
+
         if serializer.is_valid():
             serializer.save()
             return Response({'mensaje': 'Alumno actualizado correctamente.', 'data': serializer.data}, status=status.HTTP_200_OK)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
         if not pk:
             return Response({'error': 'Se requiere el ID.'}, status=status.HTTP_400_BAD_REQUEST)
-        alumno = get_object_or_404(Alumno, pk=pk)
-        alumno.delete()
-        return Response({'mensaje': 'Alumno eliminado correctamente.'}, status=status.HTTP_200_OK)
+
+        alumno = get_object_or_404(Alumno, pk=pk, is_active=True)
+        alumno.is_active = False
+        alumno.save()
+        return Response({'mensaje': 'Alumno desactivado correctamente.'}, status=status.HTTP_200_OK)
