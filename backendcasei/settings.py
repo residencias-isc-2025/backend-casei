@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-q4#w0@4ad&q8@9k8&ykhlct6vribc26k=!p_u9kxp488h)z9z^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['cacei.servicios.itesca.edu.mx', '127.0.0.1', 'localhost']
 
 
 # Application definition
@@ -99,6 +99,9 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOWED_ORIGINS = [
+   "https://cacei.servicios.itesca.edu.mx",
+]
 
 
 ROOT_URLCONF = 'backendcasei.urls'
