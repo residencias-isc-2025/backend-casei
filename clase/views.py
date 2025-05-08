@@ -10,7 +10,12 @@ from django.shortcuts import get_object_or_404
 class ClaseView(APIView):
     permission_classes = [IsAuthenticated]
 
-    def get(self, request):
+    def get(self, request, pk=None):
+        if pk:
+            clase = get_object_or_404(Clase, pk=pk) 
+            serializer = ClaseSerializer(clase)
+            return Response(serializer.data)
+        
         clases = Clase.objects.all().order_by('-id')
         periodo_id = request.query_params.get('periodo')
         if periodo_id:

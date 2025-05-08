@@ -27,22 +27,21 @@ class CarreraView(APIView):
         serializer = CarreraSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response({'mensaje': 'Carrera registrada correctamente.', 'data': serializer.data}, status=status.HTTP_201_CREATED)
+            return Response({'mensaje': 'Carrera registrada correctamente.', 'data': serializer.data}, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk=None):
-        def put(self, request, pk=None):
-            if not pk:
-                return Response({'error': 'Se requiere el ID.'}, status=status.HTTP_400_BAD_REQUEST)
+        if not pk:
+            return Response({'error': 'Se requiere el ID.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            carrera = get_object_or_404(Carrera, pk=pk, is_active=True)  
-            serializer = CarreraSerializer(carrera, data=request.data, partial=True)
+        carrera = get_object_or_404(Carrera, pk=pk, is_active=True)  
+        serializer = CarreraSerializer(carrera, data=request.data, partial=True)
 
-            if serializer.is_valid():
-                serializer.save()
-                return Response({'mensaje': 'Carrera actualizada correctamente.', 'data': serializer.data}, status=status.HTTP_200_OK)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'mensaje': 'Carrera actualizada correctamente.', 'data': serializer.data}, status=status.HTTP_200_OK)
 
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def delete(self, request, pk=None):
         if not pk:
