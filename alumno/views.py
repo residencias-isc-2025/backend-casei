@@ -11,11 +11,44 @@ class AlumnoView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        alumnos = Alumno.objects.filter(is_active=True).order_by('-id')  # ✅ solo activos
+        alumnos = Alumno.objects.all()
+
+        # Filtros
+        matricula = request.query_params.get('matricula')
+        if matricula:
+            alumnos = alumnos.filter(matricula__icontains=matricula)
+
+        nombre = request.query_params.get('nombre')
+        if nombre:
+            alumnos = alumnos.filter(nombre__icontains=nombre)
+
+        apellido_materno = request.query_params.get('apellido_materno')
+        if apellido_materno:
+            alumnos = alumnos.filter(apellido_materno__icontains=apellido_materno)
+
+        apellido_paterno = request.query_params.get('apellido_paterno')
+        if apellido_paterno:
+            alumnos = alumnos.filter(apellido_paterno__icontains=apellido_paterno)
+
+        carrera = request.query_params.get('carrera')
+        if carrera:
+            alumnos = alumnos.filter(carrera_id=carrera)
+
+        is_active = request.query_params.get('is_active')
+        if is_active is not None:
+            if is_active.lower() in ['true', '1']:
+                alumnos = alumnos.filter(is_active=True)
+            elif is_active.lower() in ['false', '0']:
+                alumnos = alumnos.filter(is_active=False)
+
+        # Ordenar por matrícula
+        alumnos = alumnos.order_by('matricula')
+
+        # Paginación
         paginator = PageNumberPagination()
         paginator.page_size = 10
-        resultado_paginado = paginator.paginate_queryset(alumnos, request)
-        serializer = AlumnoSerializer(resultado_paginado, many=True)
+        resultado = paginator.paginate_queryset(alumnos, request)
+        serializer = AlumnoSerializer(resultado, many=True)
         return paginator.get_paginated_response(serializer.data)
 
     def post(self, request):
