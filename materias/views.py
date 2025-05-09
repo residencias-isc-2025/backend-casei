@@ -16,7 +16,28 @@ class MateriaView(APIView):
             serializer = MateriaSerializer(materia)
             return Response(serializer.data)
         
-        materias = Materia.objects.all().order_by('-id')
+        materias = Materia.objects.all()
+        # ✅ Filtros
+        nombre = request.query_params.get('nombre')
+        if nombre:
+            materias = materias.filter(nombre__icontains=nombre)
+
+        clave = request.query_params.get('clave')
+        if clave:
+            materias = materias.filter(clave__icontains=clave)
+
+        semestre = request.query_params.get('semestre')
+        if semestre:
+            materias = materias.filter(semestre__icontains=semestre)
+
+        tipo_curso = request.query_params.get('tipo_curso')
+        if tipo_curso is not None:
+            if tipo_curso.lower() in ['true', '1', 'obligatoria']:
+                materias = materias.filter(tipo_curso=True)
+            elif tipo_curso.lower() in ['false', '0', 'optativa']:
+                materias = materias.filter(tipo_curso=False)
+
+        materias = materias.order_by('-id')
         paginator = PageNumberPagination()
         paginator.page_size = 10
         resultado_paginado = paginator.paginate_queryset(materias, request)
