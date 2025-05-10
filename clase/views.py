@@ -16,10 +16,26 @@ class ClaseView(APIView):
             serializer = ClaseSerializer(clase)
             return Response(serializer.data)
         
-        clases = Clase.objects.all().order_by('-id')
-        periodo_id = request.query_params.get('periodo')
-        if periodo_id:
-            clases = clases.filter(periodo_id=periodo_id)
+        clases = Clase.objects.all()
+        
+        grupo = request.query_params.get('grupo')
+        if grupo:
+            clases = clases.filter(grupo=grupo)
+
+        materia = request.query_params.get('materia')
+        if materia:
+            clases = clases.filter(materia_id=materia)
+
+        carrera = request.query_params.get('carrera')
+        if carrera:
+            clases = clases.filter(carrera_id=carrera)
+
+        periodo = request.query_params.get('periodo')
+        if periodo:
+            clases = clases.filter(periodo_id=periodo)
+
+        clases = clases.order_by('-id')
+
         paginator = PageNumberPagination()
         paginator.page_size = 10
         resultado_paginado = paginator.paginate_queryset(clases, request)
