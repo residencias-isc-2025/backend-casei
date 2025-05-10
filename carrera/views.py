@@ -16,7 +16,22 @@ class CarreraView(APIView):
             serializer = CarreraSerializer(carrera)
             return Response(serializer.data)
 
-        carreras = Carrera.objects.filter(is_active=True).order_by('-id')  
+        carreras = Carrera.objects.filter(is_active=True)
+
+        
+        nombre = request.query_params.get('nombre')
+        if nombre:
+            carreras = carreras.filter(nombre__icontains=nombre)
+
+    
+        area_adscripcion = request.query_params.get('area_adscripcion')
+        if area_adscripcion:
+            carreras = carreras.filter(adscripcion_id=area_adscripcion)
+
+        # Ordenar por ID descendente
+        carreras = carreras.order_by('-id')
+
+        # Paginación
         paginator = PageNumberPagination()
         paginator.page_size = 10
         resultado_paginado = paginator.paginate_queryset(carreras, request)
