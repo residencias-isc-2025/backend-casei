@@ -15,14 +15,21 @@ class CarreraView(APIView):
             carrera = get_object_or_404(Carrera, pk=pk, is_active=True) 
             serializer = CarreraSerializer(carrera)
             return Response(serializer.data)
+        
+        paginator = PageNumberPagination()
+        
+        page_size = request.query_params.get('page_size', 10)
+        
+        try:
+            paginator.page_size = int(page_size)
+        except ValueError:
+            paginator.page_size = 10
 
         carreras = Carrera.objects.filter(is_active=True)
 
-        
         nombre = request.query_params.get('nombre')
         if nombre:
             carreras = carreras.filter(nombre__icontains=nombre)
-
     
         area_adscripcion = request.query_params.get('area_adscripcion')
         if area_adscripcion:

@@ -15,6 +15,15 @@ class MateriaView(APIView):
             materia = get_object_or_404(Materia, pk=pk)
             serializer = MateriaSerializer(materia)
             return Response(serializer.data)
+
+        paginator = PageNumberPagination()
+        
+        page_size = request.query_params.get('page_size', 10)
+        
+        try:
+            paginator.page_size = int(page_size)
+        except ValueError:
+            paginator.page_size = 10
         
         materias = Materia.objects.all()
         # ✅ Filtros
@@ -37,9 +46,8 @@ class MateriaView(APIView):
             elif tipo_curso.lower() in ['false', '0', 'optativa']:
                 materias = materias.filter(tipo_curso=False)
 
-        materias = materias.order_by('-id')
-        paginator = PageNumberPagination()
-        paginator.page_size = 10
+        materias = materias.order_by('semestre', 'nombre')
+
         resultado_paginado = paginator.paginate_queryset(materias, request)
         serializer = MateriaSerializer(resultado_paginado, many=True)
         return paginator.get_paginated_response(serializer.data)
