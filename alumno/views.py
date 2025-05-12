@@ -84,3 +84,15 @@ class AlumnoCountView(APIView):
     def get(self, request):
         total = Alumno.objects.count()
         return Response({'total_alumnos': total}, status=status.HTTP_200_OK)
+
+class HablitarAlumnoView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def put(self, request, pk=None):
+        if not pk:
+            return Response({'error': 'Se requiere un ID de alumno para habilitar'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        alumno = get_object_or_404(Alumno, pk=pk)
+        alumno.is_active = True
+        alumno.save()
+        return Response({'mensaje': 'Alumno activado correctamente'}, status=status.HTTP_200_OK)
