@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from adscripcion.models import AreaAdscripcion
 from adscripcion.serializers import AreaAdscripcionSerializer
+import csv
 
 # Create your views here.
 class AreaAdscripcionView(APIView):
@@ -104,3 +105,51 @@ class HabilitarAreaAdscripcionView(APIView):
 
         return Response({"mensaje": f"Área de adscripción habilitada correctamente."},
                         status=status.HTTP_200_OK)
+
+class AdscripcionByCsvView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        archivo_csv = request.FILES.get('archivo_csv')
+        
+        if not archivo_csv:
+            return Response({"error": "No se proporcionó ningún archivo CSV."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            csv_reader = csv.DictReader(archivo_csv.read().decode('utf-8').splitlines())
+            adscripciones = []
+            errores = []
+            
+            for adscripcion in csv_reader:
+                try:
+                    nombre = adscripcion.get('nombre')
+                    siglas = adscripcion.get('siglas')
+                    
+                    if not nombre or not siglas:
+                        errores.append(f"Faltan datos obligatorios en la fila: {adscripcion}")
+                        continue
+                    
+                    area_adscripcion = AreaAdscripcion.objects.create(
+                        nombre=nombre,
+                        siglas=siglas
+                    )
+                    
+                    adscripciones.append(nombre)
+                    
+                except Exception as e:
+                    errores.append(f"Error al crear adscripción con los datos: {adscripcion}. Error: {str(e)}")
+            
+            resultado = {
+                "adscripciones_creadas": adscripciones,
+                "errores": errores
+            }
+            
+            return Response({
+                "mensaje": f"Se procesaron {len(adscripciones)} adscripciones.",
+                "resultado": resultado
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response({"error": f"Error al procesar el archivo CSV: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    
+            
