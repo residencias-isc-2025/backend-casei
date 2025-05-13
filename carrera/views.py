@@ -1,3 +1,5 @@
+from django.http import HttpResponse
+from django.utils.encoding import smart_str
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -6,6 +8,7 @@ from rest_framework.pagination import PageNumberPagination
 from carrera.models import Carrera
 from carrera.serializers import CarreraSerializer
 from django.shortcuts import get_object_or_404
+from openpyxl import Workbook
 
 class CarreraView(APIView):
     permission_classes = [IsAuthenticated]
@@ -72,3 +75,32 @@ class CarreraView(APIView):
         carrera = get_object_or_404(Carrera, pk=pk)
         carrera.is_active = False
         carrera.save()
+
+class CarreraExportExcelView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        carreras = Carrera.objects.filter(is_active=True).order_by('id')
+        
+        wb = Workbook()
+        ws = wb.active
+        ws.title = 'Carreras'
+        
+        headers = ['ID', 'Nombre']
+        ws.append(headers)
+        
+        for carrera in carreras:
+            ws.append([
+                carrera.id,
+                carrera.nombre
+            ])
+            
+        response = HttpResponse(
+            content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
+        
+        response['Content-Disposition'] = 'attachment; filename={}'.format(smart_str("carreras.xlsx"))
+        
+        wb.save(response)
+        return response
+        
