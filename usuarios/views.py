@@ -238,11 +238,16 @@ class UserProfileView(APIView):
 
 # Endpoint de listado
 class ListUsersView(ListAPIView):
-    permission_classes = [IsAuthenticated]  # Solo usuarios autenticados pueden acceder
+    permission_classes = [IsAuthenticated]
     serializer_class = UserSerializer
 
     def get_queryset(self):
+        # Excluir al usuario actual siempre
         queryset = CustomUser.objects.exclude(id=self.request.user.id).order_by('username')
+
+        # Si el usuario es admin, excluir superusers
+        if self.request.user.role == 'admin':
+            queryset = queryset.exclude(role='superuser')
 
         # Filtros de búsqueda
         search_username = self.request.query_params.get('username', None)
