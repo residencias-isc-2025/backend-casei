@@ -6,6 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 from clase.models import Clase
 from clase.serializers import ClaseSerializer
 from django.shortcuts import get_object_or_404
+from periodo.models import Periodo
 
 class ClaseView(APIView):
     permission_classes = [IsAuthenticated]
@@ -65,4 +66,35 @@ class ClaseView(APIView):
         clase = get_object_or_404(Clase, pk=pk)
         clase.delete()
         return Response({'mensaje': 'Clase eliminada correctamente.'}, status=status.HTTP_200_OK)
+    
+
+class MigrarClaseView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        clase_id = request.data.get('clase_id')
+        nuevo_periodo_id = request.data.get('periodo_id')
+
+        if not clase_id or not nuevo_periodo_id:
+            return Response({'error': 'Se requieren los campos clase_id y periodo_id.'},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        clase_original = get_object_or_404(Clase, pk=clase_id)
+        nuevo_periodo = get_object_or_404(Periodo, pk=nuevo_periodo_id)
+
+        # Crear nueva instancia duplicada
+        nueva_clase = Clase.objects.create(
+            grupo=clase_original.grupo,
+            materia=clase_original.materia,
+            carrera=clase_original.carrera,
+            periodo=nuevo_periodo,
+            docente=None  # excluido
+        )
+
+        # No se copian alumnos por requerimiento
+        serializer = ClaseSerializer(nueva_clase)
+        return Response({
+            'mensaje': 'Clase duplicada correctamente.',
+            'data': serializer.data
+        }, status=status.HTTP_201_CREATED)
     
