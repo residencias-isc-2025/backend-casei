@@ -6,6 +6,8 @@ from rest_framework.pagination import PageNumberPagination
 from django.shortcuts import get_object_or_404
 from institucion.models import InstitucionPais
 from institucion.serializers import InstitucionPaisSerializer
+import csv
+
 
 # Create your views here.
 class InstitucionPaisView(APIView):
@@ -97,3 +99,50 @@ class HabilitarInstitucionView(APIView):
 
         return Response({"mensaje": f"Institución {institucion.nombre_institucion} habilitada correctamente."}, status=status.HTTP_200_OK)
 
+class InstitucionByCsvView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        archivo_csv = request.FILES.get('archivo_csv')
+        
+        if not archivo_csv:
+            return Response({"error": "No se proporcionó ningún archivo CSV."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            csv_reader = csv.DictReader(archivo_csv.read().decode('utf-8').splitlines())
+            instituciones = []
+            errores = []
+            
+            for adscripcion in csv_reader:
+                try:
+                    nombre_institucion = adscripcion.get('nombre')
+                    pais = adscripcion.get('pais')
+                    
+                    if not nombre_institucion or not pais:
+                        errores.append(f"Faltan datos obligatorios en la fila: {adscripcion}")
+                        continue
+                    
+                    institucion_pais = InstitucionPais.objects.create(
+                        nombre_institucion=nombre_institucion,
+                        pais=pais
+                    )
+                    
+                    instituciones.append(nombre_institucion)
+                    
+                except Exception as e:
+                    errores.append(f"Error al crear instituciones con los datos: {adscripcion}. Error: {str(e)}")
+            
+            resultado = {
+                "instituciones_creadas": instituciones,
+                "errores": errores
+            }
+            
+            return Response({
+                "mensaje": f"Se procesaron {len(instituciones)} instituciones.",
+                "resultado": resultado
+            }, status=status.HTTP_200_OK)
+            
+        except Exception as e:
+            return Response({"error": f"Error al procesar el archivo CSV: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+                    
+            
