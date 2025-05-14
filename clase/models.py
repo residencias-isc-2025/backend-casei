@@ -3,6 +3,7 @@ from materias.models import Materia
 from carrera.models import Carrera
 from periodo.models import Periodo
 from alumno.models import Alumno
+from usuarios.models import CustomUser
 
 class Clase(models.Model):
     GRUPO_CHOICES = [
@@ -11,6 +12,8 @@ class Clase(models.Model):
         ('03', 'Grupo 03'),
     ]
 
+    docente = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, blank=True, related_name='clases_docente')
+ 
     grupo = models.CharField(max_length=2, choices=GRUPO_CHOICES, null=True, blank=True)
     materia = models.ForeignKey(Materia, on_delete=models.CASCADE, related_name='clases', null=True, blank=True)
     carrera = models.ForeignKey(Carrera, on_delete=models.CASCADE, related_name='clases', null=True, blank=True)
