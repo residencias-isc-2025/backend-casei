@@ -51,7 +51,7 @@ requirements.txt
 6. Ejecutar los siguentes comando para reiniciar el servidor y borrar cache:
 ```
 sudo systemctl restart gunicorn_cacei
-sudo systemctl restart gninx
+sudo systemctl restart nginx
 ```
 
 
