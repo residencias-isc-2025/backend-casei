@@ -7,12 +7,24 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
+from atributo_egreso.models import AtributoEgreso
+from atributo_egreso.serializers import AtributoEgresoSerializers
+from bibliografia.models import Bibliografia
+from bibliografia.serializers import BibliografiaSerializers
 from competencia.models import Competencia
 from competencia.serializers import CompetenciaSerializer
+from criterio_desempeno.models import CriterioDesempeno
+from criterio_desempeno.serializers import CriterioDesempenoSerializers
+from estrategia_ensenanza.models import EstrategiaEnsenanza
+from estrategia_ensenanza.serializers import EstrategiaEnsenanzaSerializers
+from estrategia_evaluacion.models import EstrategiaEvaluacion
+from estrategia_evaluacion.serializers import EstrategiaEvaluacionSerializers
 from materias.models import Materia
 from materias.serializers import MateriaSerializer
 from objetivos_especificos.models import ObjetivosEspecificos
 from objetivos_especificos.serializers import ObjetivosEspecificosSerializers
+from practica.models import Practica
+from practica.serializers import PracticaSerializers
 from temas.models import Temas
 from temas.serializers import TemasSerializers
 from usuarios.serializers import UserSerializer
@@ -189,11 +201,17 @@ class ProgramaAsignaturaView(APIView):
             materia_data = MateriaSerializer(materia).data
             
             competencias_ids = materia_data.get('competencias', [])
+            criterios_desempenio_ids = materia_data.get('criterio_desempeno', [])
+            bibliografias_ids = materia_data.get('bibliografia', [])
             competencias_qs = Competencia.objects.filter(id__in=competencias_ids)
             competencias_data = CompetenciaSerializer(competencias_qs, many=True).data
-            
+                        
             objetivos_especificos_ids = set()
             temas_ids = set()
+            atributos_egreso_ids = set()
+            estrategias_ensenanza_ids = set()
+            estrategias_evaluacion_ids = set()
+            practicas_ids = set()
             
             for competencia in competencias_data:
                 if competencia.get('objetivos_especificos'):
@@ -208,11 +226,46 @@ class ProgramaAsignaturaView(APIView):
             temas_qs = Temas.objects.filter(id__in=temas_ids)
             temas_data = TemasSerializers(temas_qs, many=True).data
             
+            for tema in temas_data:
+                if tema.get('estrategia_ensenanza'):
+                    estrategias_ensenanza_ids.add(tema['estrategia_ensenanza'])
+                if tema.get('estrategia_evaluacion'):
+                    estrategias_evaluacion_ids.add(tema['estrategia_evaluacion'])
+                if tema.get('practica'):
+                    practicas_ids.add(tema['practica'])
+            
+            criterios_desempeno_qs = CriterioDesempeno.objects.filter(id__in=criterios_desempenio_ids)
+            criterios_desempenio_data = CriterioDesempenoSerializers(criterios_desempeno_qs, many=True).data
+                    
+            for criterio_desempeno in criterios_desempenio_data:
+                if criterio_desempeno.get('atributo_egreso'):
+                    atributos_egreso_ids.add(criterio_desempeno['atributo_egreso'])
+                    
+            atributos_egreso_qs = AtributoEgreso.objects.filter(id__in=atributos_egreso_ids)
+            atributos_egreso_data = AtributoEgresoSerializers(atributos_egreso_qs, many=True).data
+            
+            estrategias_ensenanza_qs = EstrategiaEnsenanza.objects.filter(id__in=estrategias_ensenanza_ids)
+            estrategias_ensenanza_data = EstrategiaEnsenanzaSerializers(estrategias_ensenanza_qs, many=True).data
+            
+            estrategias_evaluacion_qs = EstrategiaEvaluacion.objects.filter(id__in=estrategias_evaluacion_ids)
+            estrategias_evaluacion_data = EstrategiaEvaluacionSerializers(estrategias_evaluacion_qs, many=True).data
+            
+            practicas_qs = Practica.objects.filter(id__in=practicas_ids)
+            practicas_data = PracticaSerializers(practicas_qs, many=True).data
+            
+            bibliografias_qs = Bibliografia.objects.filter(id__in=bibliografias_ids)
+            bibliografias_data = BibliografiaSerializers(bibliografias_qs, many=True).data
+            
             data = {
                 "materia": materia_data,
                 "competencias": competencias_data,
                 "objetivos_especificos": objetivos_data,
-                "temas": temas_data
+                "temas": temas_data,
+                "atributos_egreso": atributos_egreso_data,
+                "estrategias_ensenanza": estrategias_ensenanza_data,
+                "estrategias_evaluacion": estrategias_evaluacion_data,
+                "practicas": practicas_data,
+                "bibliografias": bibliografias_data
             }
             
             return Response(data, status=status.HTTP_200_OK)
