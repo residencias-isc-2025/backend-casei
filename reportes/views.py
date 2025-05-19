@@ -7,6 +7,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken  # 🔹 Importación para autenticación por tokens
 from rest_framework.authtoken.models import Token
 from rest_framework.generics import ListAPIView
+from competencia.models import Competencia
+from competencia.serializers import CompetenciaSerializer
+from materias.models import Materia
+from materias.serializers import MateriaSerializer
+from objetivos_especificos.models import ObjetivosEspecificos
+from objetivos_especificos.serializers import ObjetivosEspecificosSerializers
+from temas.models import Temas
+from temas.serializers import TemasSerializers
 from usuarios.serializers import UserSerializer
 from usuarios.models import CustomUser
 from formacion_academica.serializers import FormacionAcademicaSerializer
@@ -171,3 +179,40 @@ class CreateUsersByCsvView(APIView):
 
         except Exception as e:
             return Response({"error": f"Error al procesar el archivo CSV: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ProgramaAsignaturaView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk=None):
+        if pk:
+            materia = get_object_or_404(Materia, pk=pk)
+            materia_data = MateriaSerializer(materia).data
+            
+            competencias_ids = materia_data.get('competencias', [])
+            competencias_qs = Competencia.objects.filter(id__in=competencias_ids)
+            competencias_data = CompetenciaSerializer(competencias_qs, many=True).data
+            
+            objetivos_especificos_ids = set()
+            temas_ids = set()
+            
+            for competencia in competencias_data:
+                if competencia.get('objetivos_especificos'):
+                    objetivos_especificos_ids.add(competencia['objetivos_especificos'])
+                
+                if competencia.get('temas'):
+                    temas_ids.update( competencia['temas'])
+
+            objetivos_qs = ObjetivosEspecificos.objects.filter(id__in=objetivos_especificos_ids)
+            objetivos_data = ObjetivosEspecificosSerializers(objetivos_qs, many=True).data
+            
+            temas_qs = Temas.objects.filter(id__in=temas_ids)
+            temas_data = TemasSerializers(temas_qs, many=True).data
+            
+            data = {
+                "materia": materia_data,
+                "competencias": competencias_data,
+                "objetivos_especificos": objetivos_data,
+                "temas": temas_data
+            }
+            
+            return Response(data, status=status.HTTP_200_OK)
