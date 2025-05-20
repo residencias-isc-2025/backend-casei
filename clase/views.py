@@ -98,3 +98,18 @@ class MigrarClaseView(APIView):
             'data': serializer.data
         }, status=status.HTTP_201_CREATED)
     
+class MisClasesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+
+        clases = Clase.objects.filter(docente=user).order_by('-id')
+
+        paginator = PageNumberPagination()
+        paginator.page_size = 10
+        resultado_paginado = paginator.paginate_queryset(clases, request)
+        serializer = ClaseSerializer(resultado_paginado, many=True)
+
+        return paginator.get_paginated_response(serializer.data)
+    
