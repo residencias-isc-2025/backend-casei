@@ -1,4 +1,5 @@
 import csv
+from datetime import date
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -57,6 +58,9 @@ from premios.serializers import PremioSerializer
 from premios.models import Premio
 from productos_academicos.serializers import ProductosAcademicosRelevantesSerializer
 from productos_academicos.models import ProductosAcademicosRelevantes
+from django.utils.timezone import now
+from clase.models import Clase
+from periodo.models import Periodo
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.hashers import make_password
@@ -199,6 +203,12 @@ class ProgramaAsignaturaView(APIView):
         if pk:
             materia = get_object_or_404(Materia, pk=pk)
             materia_data = MateriaSerializer(materia).data
+
+            hoy = date.today()
+            periodo_actual = Periodo.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy).first()
+            total_clases = 0
+            if periodo_actual:
+                total_clases = Clase.objects.filter(periodo=periodo_actual).count()
             
             competencias_ids = materia_data.get('competencias', [])
             criterios_desempenio_ids = materia_data.get('criterio_desempeno', [])
@@ -265,7 +275,10 @@ class ProgramaAsignaturaView(APIView):
                 "estrategias_ensenanza": estrategias_ensenanza_data,
                 "estrategias_evaluacion": estrategias_evaluacion_data,
                 "practicas": practicas_data,
-                "bibliografias": bibliografias_data
+                "bibliografias": bibliografias_data,
+                "total_clases_periodo_actual": total_clases
             }
             
             return Response(data, status=status.HTTP_200_OK)
+        
+
