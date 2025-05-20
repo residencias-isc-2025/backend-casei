@@ -207,51 +207,64 @@ class ProgramaAsignaturaView(APIView):
             hoy = date.today()
             periodo_actual = Periodo.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy).first()
             total_clases = 0
+            docentes = []
+
             if periodo_actual:
                 total_clases = Clase.objects.filter(periodo=periodo_actual, materia=materia).count()
-                docentes_qs = Clase.objects.filter(
+                clases_qs = Clase.objects.filter(
                     periodo=periodo_actual,
                     materia=materia,
                     docente__isnull=False
-                ).values(
-                    'docente__id',
-                    'docente__username',
-                    'docente__nombre',
-                    'docente__apellido_paterno',
-                    'docente__apellido_materno',
-                    'docente__email',
-                    'docente__area_adscripcion__nombre'
-                ).distinct()
-                docentes = list(docentes_qs)
-            else:
-                docentes = []
+                ).select_related('docente').distinct()
 
+                NIVEL_JERARQUIA = {'L': 1, 'E': 2, 'M': 3, 'D': 4}
+
+                docentes_ids = clases_qs.values_list('docente__id', flat=True).distinct()
+                for docente_id in docentes_ids:
+                    docente = CustomUser.objects.get(id=docente_id)
+                    formaciones = FormacionAcademica.objects.filter(usuario=docente)
+
+                    nivel_mas_alto = None
+                    for f in formaciones:
+                        nivel = f.nivel
+                        if nivel and (not nivel_mas_alto or NIVEL_JERARQUIA.get(nivel, 0) > NIVEL_JERARQUIA.get(nivel_mas_alto, 0)):
+                            nivel_mas_alto = nivel
+
+                    docentes.append({
+                        "id": docente.id,
+                        "username": docente.username,
+                        "apellido_materno": docente.apellido_materno,
+                        "apellido_paterno": docente.apellido_paterno,
+                        "nombre": docente.nombre,
+                        "grado_academico": nivel_mas_alto
+                    })
+
+            # Resto del código para serializar la materia
             competencias_ids = materia_data.get('competencias', [])
             criterios_desempenio_ids = materia_data.get('criterio_desempeno', [])
             bibliografias_ids = materia_data.get('bibliografia', [])
             competencias_qs = Competencia.objects.filter(id__in=competencias_ids)
             competencias_data = CompetenciaSerializer(competencias_qs, many=True).data
-                        
+
             objetivos_especificos_ids = set()
             temas_ids = set()
             atributos_egreso_ids = set()
             estrategias_ensenanza_ids = set()
             estrategias_evaluacion_ids = set()
             practicas_ids = set()
-            
+
             for competencia in competencias_data:
                 if competencia.get('objetivos_especificos'):
                     objetivos_especificos_ids.add(competencia['objetivos_especificos'])
-                
                 if competencia.get('temas'):
-                    temas_ids.update( competencia['temas'])
+                    temas_ids.update(competencia['temas'])
 
             objetivos_qs = ObjetivosEspecificos.objects.filter(id__in=objetivos_especificos_ids)
             objetivos_data = ObjetivosEspecificosSerializers(objetivos_qs, many=True).data
-            
+
             temas_qs = Temas.objects.filter(id__in=temas_ids)
             temas_data = TemasSerializers(temas_qs, many=True).data
-            
+
             for tema in temas_data:
                 if tema.get('estrategia_ensenanza'):
                     estrategias_ensenanza_ids.add(tema['estrategia_ensenanza'])
@@ -259,29 +272,29 @@ class ProgramaAsignaturaView(APIView):
                     estrategias_evaluacion_ids.add(tema['estrategia_evaluacion'])
                 if tema.get('practica'):
                     practicas_ids.add(tema['practica'])
-            
+
             criterios_desempeno_qs = CriterioDesempeno.objects.filter(id__in=criterios_desempenio_ids)
             criterios_desempenio_data = CriterioDesempenoSerializers(criterios_desempeno_qs, many=True).data
-                    
-            for criterio_desempeno in criterios_desempenio_data:
-                if criterio_desempeno.get('atributo_egreso'):
-                    atributos_egreso_ids.add(criterio_desempeno['atributo_egreso'])
-                    
+
+            for criterio in criterios_desempenio_data:
+                if criterio.get('atributo_egreso'):
+                    atributos_egreso_ids.add(criterio['atributo_egreso'])
+
             atributos_egreso_qs = AtributoEgreso.objects.filter(id__in=atributos_egreso_ids)
             atributos_egreso_data = AtributoEgresoSerializers(atributos_egreso_qs, many=True).data
-            
+
             estrategias_ensenanza_qs = EstrategiaEnsenanza.objects.filter(id__in=estrategias_ensenanza_ids)
             estrategias_ensenanza_data = EstrategiaEnsenanzaSerializers(estrategias_ensenanza_qs, many=True).data
-            
+
             estrategias_evaluacion_qs = EstrategiaEvaluacion.objects.filter(id__in=estrategias_evaluacion_ids)
             estrategias_evaluacion_data = EstrategiaEvaluacionSerializers(estrategias_evaluacion_qs, many=True).data
-            
+
             practicas_qs = Practica.objects.filter(id__in=practicas_ids)
             practicas_data = PracticaSerializers(practicas_qs, many=True).data
-            
+
             bibliografias_qs = Bibliografia.objects.filter(id__in=bibliografias_ids)
             bibliografias_data = BibliografiaSerializers(bibliografias_qs, many=True).data
-            
+
             data = {
                 "materia": materia_data,
                 "competencias": competencias_data,
@@ -295,7 +308,7 @@ class ProgramaAsignaturaView(APIView):
                 "total_clases_periodo_actual": total_clases,
                 "docentes_periodo_actual": docentes
             }
-            
+
             return Response(data, status=status.HTTP_200_OK)
         
 
