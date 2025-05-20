@@ -208,8 +208,24 @@ class ProgramaAsignaturaView(APIView):
             periodo_actual = Periodo.objects.filter(fecha_inicio__lte=hoy, fecha_fin__gte=hoy).first()
             total_clases = 0
             if periodo_actual:
-                total_clases = Clase.objects.filter(periodo=periodo_actual).count()
-            
+                total_clases = Clase.objects.filter(periodo=periodo_actual, materia=materia).count()
+                docentes_qs = Clase.objects.filter(
+                    periodo=periodo_actual,
+                    materia=materia,
+                    docente__isnull=False
+                ).values(
+                    'docente__id',
+                    'docente__username',
+                    'docente__nombre',
+                    'docente__apellido_paterno',
+                    'docente__apellido_materno',
+                    'docente__email',
+                    'docente__area_adscripcion__nombre'
+                ).distinct()
+                docentes = list(docentes_qs)
+            else:
+                docentes = []
+
             competencias_ids = materia_data.get('competencias', [])
             criterios_desempenio_ids = materia_data.get('criterio_desempeno', [])
             bibliografias_ids = materia_data.get('bibliografia', [])
@@ -276,7 +292,8 @@ class ProgramaAsignaturaView(APIView):
                 "estrategias_evaluacion": estrategias_evaluacion_data,
                 "practicas": practicas_data,
                 "bibliografias": bibliografias_data,
-                "total_clases_periodo_actual": total_clases
+                "total_clases_periodo_actual": total_clases,
+                "docentes_periodo_actual": docentes
             }
             
             return Response(data, status=status.HTTP_200_OK)
