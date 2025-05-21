@@ -6,6 +6,8 @@ class ActividadSerializer(serializers.ModelSerializer):
         model = Actividad
         fields = [
             'id',
+            'clase',
+            'titulo',
             'descripcion',
             'formato',
             # 'calificaciones',  ← 🔒 comentar o eliminar por ahora

@@ -1,6 +1,7 @@
 from django.db import models
 from alumno.models import Alumno
 from calificaciones.models import Calificacion
+from clase.models import Clase
 
 def evidencia_path(instance, filename):
     return f'actividades/evidencias/{instance.pk}/{filename}'
@@ -9,6 +10,8 @@ def formato_path(instance, filename):
     return f'actividades/formatos/{instance.pk}/{filename}'
 
 class Actividad(models.Model):
+    clase = models.ForeignKey(Clase, on_delete=models.CASCADE, related_name='actividades', null=True, blank=True)
+    titulo = models.CharField(max_length=255, null=True, blank=True)
     descripcion = models.FileField(upload_to='actividades/descripcion/', null=True, blank=True)
     formato = models.FileField(upload_to=formato_path, null=True, blank=True)
     
