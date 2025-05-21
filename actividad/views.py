@@ -5,6 +5,8 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from actividad.models import Actividad
 from actividad.serializers import ActividadSerializer
+from clase.models import Clase
+from clase.serializers import ClaseSerializer
 from django.shortcuts import get_object_or_404
 
 class ActividadView(APIView):
@@ -35,3 +37,14 @@ class ActividadView(APIView):
         actividad = get_object_or_404(Actividad, pk=pk)
         actividad.delete()
         return Response({'mensaje': 'Actividad eliminada correctamente.'}, status=status.HTTP_200_OK)
+    
+class ActividadesPorClaseView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, clase_id):
+        clase = get_object_or_404(Clase, pk=clase_id)
+        actividades = Actividad.objects.filter(clase=clase).order_by('-id')
+        serializer = ActividadSerializer(actividades, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
