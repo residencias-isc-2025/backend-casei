@@ -15,6 +15,15 @@ class AlumnoView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
+        paginator = PageNumberPagination()
+        
+        page_size = request.query_params.get('page_size', 10)
+        
+        try:
+            paginator.page_size = int(page_size)
+        except ValueError:
+            paginator.page_size = 10
+            
         alumnos = Alumno.objects.all()
 
         # Filtros
@@ -52,7 +61,6 @@ class AlumnoView(APIView):
 
         # Paginación
         paginator = PageNumberPagination()
-        paginator.page_size = 10
         resultado = paginator.paginate_queryset(alumnos, request)
         serializer = AlumnoSerializer(resultado, many=True)
         return paginator.get_paginated_response(serializer.data)
