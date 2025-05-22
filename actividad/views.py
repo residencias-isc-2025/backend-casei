@@ -43,7 +43,7 @@ class ActividadesPorClaseView(APIView):
 
     def get(self, request, clase_id):
         clase = get_object_or_404(Clase, pk=clase_id)
-        actividades = Actividad.objects.filter(clase=clase).order_by('-id')
+        actividades = Actividad.objects.filter(clase=clase).order_by('id')
         serializer = ActividadSerializer(actividades, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
