@@ -5,6 +5,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.pagination import PageNumberPagination
 from calificaciones.models import Calificacion
 from calificaciones.serializers import CalificacionSerializer
+from clase.models import Clase
+from clase.serializers import ClaseSerializer
 from django.shortcuts import get_object_or_404
 
 class CalificacionView(APIView):
@@ -41,3 +43,14 @@ class CalificacionView(APIView):
         calificacion = get_object_or_404(Calificacion, pk=pk)
         calificacion.delete()
         return Response({'mensaje': 'Calificación eliminada correctamente.'}, status=status.HTTP_200_OK)
+    
+class CalificacionesPorClaseView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, clase_id):
+        clase = get_object_or_404(Clase, pk=clase_id)
+        calificaciones = Calificacion.objects.filter(clase=clase).order_by('-id')
+        serializer = CalificacionSerializer(calificaciones, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    
