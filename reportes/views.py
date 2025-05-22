@@ -210,6 +210,12 @@ class ProgramaAsignaturaView(APIView):
             total_clases = 0
             docentes = []
             clases_serialized = []
+            
+            if not periodo_actual:
+                periodo_actual = Periodo.objects.filter(
+                    fecha_fin__lt=hoy
+                ).order_by('-fecha_fin').first()
+
 
             if periodo_actual:
                 clases = Clase.objects.filter(periodo=periodo_actual, materia=materia)
