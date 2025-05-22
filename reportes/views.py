@@ -12,6 +12,7 @@ from atributo_egreso.models import AtributoEgreso
 from atributo_egreso.serializers import AtributoEgresoSerializers
 from bibliografia.models import Bibliografia
 from bibliografia.serializers import BibliografiaSerializers
+from clase.serializers import ClaseSerializer
 from competencia.models import Competencia
 from competencia.serializers import CompetenciaSerializer
 from criterio_desempeno.models import CriterioDesempeno
@@ -210,13 +211,17 @@ class ProgramaAsignaturaView(APIView):
             docentes = []
 
             if periodo_actual:
-                total_clases = Clase.objects.filter(periodo=periodo_actual, materia=materia).count()
+                clases = Clase.objects.filter(periodo=periodo_actual, materia=materia)
+                total_clases = clases.count()
+                
                 clases_qs = Clase.objects.filter(
                     periodo=periodo_actual,
                     materia=materia,
                     docente__isnull=False
                 ).select_related('docente').distinct()
-
+                
+                clases_serialized = ClaseSerializer(clases, many=True).data
+                
                 NIVEL_JERARQUIA = {'L': 1, 'E': 2, 'M': 3, 'D': 4}
 
                 docentes_ids = clases_qs.values_list('docente__id', flat=True).distinct()
@@ -306,7 +311,8 @@ class ProgramaAsignaturaView(APIView):
                 "practicas": practicas_data,
                 "bibliografias": bibliografias_data,
                 "total_clases_periodo_actual": total_clases,
-                "docentes_periodo_actual": docentes
+                "docentes_periodo_actual": docentes,
+                "clases": clases_serialized
             }
 
             return Response(data, status=status.HTTP_200_OK)
